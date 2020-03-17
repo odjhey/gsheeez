@@ -17,7 +17,6 @@ Read and Write to gsheet.
 ```
 
 #### Schema Definition
-TODO
 
 ### Write
 ```javascript
@@ -27,6 +26,8 @@ TODO
                              'Hello!')
   const result = await trans.save()
 ```
+
+## API
 
 ## TODO
 1. add schema defs
