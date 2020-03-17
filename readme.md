@@ -1,5 +1,5 @@
 # g-Sheeez
-> Read and Write to gsheets using google's api
+> Read and Write to gsheets using google's api  
 > Refer to [Google Api - Sheets](https://developers.google.com/sheets/api/quickstart/nodejs).
 
 ## Usage
