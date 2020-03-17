@@ -1,5 +1,3 @@
-
-
-it( 'should run jest successfully', () => {
-    expect(true).toBe(true);
+it('should run jest successfully', () => {
+  expect(true).toBe(true);
 });
