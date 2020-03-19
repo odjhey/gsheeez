@@ -3,7 +3,7 @@ type TGridSchemaInput = {
   header: ArrayLike<string>
 }
 
-type TSchema = ArrayLike<{
+type TSchema = Array<{
   key: string
   __metadata: { column: string }
 }>
@@ -31,4 +31,25 @@ const createSchema = (input: TGridSchemaInput): TSchema => {
   return schema
 }
 
+const toJSONWithSchema = (schema: TSchema, grid) => {
+  //convert to json obj, header = idx 0
+  let toJson = []
+  let header = schema.map(item => item.key)
+  grid.forEach((row, rowIdx) => {
+    let lineObj = {}
+
+    header.forEach((field, col) => {
+      lineObj[header[col]] = row[col]
+    })
+
+    lineObj['__metadata'] = { rowIdx: rowIdx + 1}
+
+    toJson.push(lineObj)
+  })
+
+  return toJson
+}
+
 export { createSchema }
+export { toJSONWithSchema }
+export { TSchema }
