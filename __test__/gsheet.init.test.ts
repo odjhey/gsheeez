@@ -3,12 +3,12 @@ type TGridSchemaInput = {
   header: ArrayLike<string>
 }
 
-type TGridSchema = ArrayLike<{
+type TSchema = ArrayLike<{
   key: string
   __metadata: { column: string }
 }>
 
-const createSchema = (input: TGridSchemaInput): TGridSchema => {
+const createSchema = (input: TGridSchemaInput): TSchema => {
   const [from, to] = input.range.split(':')
   let token = from
   let chars = []
@@ -54,6 +54,10 @@ describe('models', () => {
     ])
   })
 
-  it('should be able to create a model from a schema', () => {})
-  it('should be able to create a model and a schema from a single grid', () => {})
+  it('should be able to create a model from a schema', () => {
+
+  })
+  it('should be able to create a model and a schema from a single grid', () => {
+
+  })
 })
