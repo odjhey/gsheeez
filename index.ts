@@ -3,7 +3,7 @@ const readline = require('readline')
 
 import { google } from 'googleapis'
 
-import { toJSON, groupByKeys } from './core'
+import { toJSON, groupByKeys } from './src/core'
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets']

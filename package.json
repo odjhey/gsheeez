@@ -1,10 +1,11 @@
 {
   "name": "gsheeez",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "index.js",
   "scripts": {
     "start": "node -r ts-node/register ./index.ts",
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc"
   },
   "license": "MIT",
   "dependencies": {
