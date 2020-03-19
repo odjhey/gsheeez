@@ -2,7 +2,7 @@ const fs = require('fs')
 const readline = require('readline')
 import { google } from 'googleapis'
 
-import { toJSON , groupByKeys } from './core'
+import { toJSON, groupByKeys } from './core'
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -81,26 +81,28 @@ function listMajors(auth) {
   const sheets = google.sheets({ version: 'v4', auth })
   sheets.spreadsheets.values.get(
     {
-      spreadsheetId: '1ux7ttNVuTbMaIfcW4t8tZe9Ii17F-3khXjHR8Il2dGI',
-      range: 'A:O',
+      spreadsheetId: '1fHSzX_gsg6yG9RmHLCMBWQggJrGS3v440gGzl_BKVVs',
+      range: 'A:G',
     },
     (err, res) => {
       if (err) return console.log('The API returned an error: ' + err)
       const rows = res.data.values
 
-      console.log('rows', rows)
+      // console.log('rows', rows)
 
       const toJson = toJSON(rows)
-
-      const grouped = groupByKeys(
-        toJson.map(item => {
-          return {
-            'Shipment No.:': item['Shipment No.:'],
-            'Delivery Order No.:': item['Delivery Order No.:'],
-          }
-        }),
-        toJson,
-      )
+      const keys = toJson.map(item => {
+        return {
+          'Team Number': item['Team Number'],
+          'Team Name': item['Team Name'],
+        }
+      })
+      const grouped = groupByKeys(keys, toJson)
+      console.log('grouped')
+      grouped.map(group => {
+        console.log('key', group.key)
+        console.log('items', group.items)
+      })
     },
   )
 
@@ -115,7 +117,6 @@ function listMajors(auth) {
       },
     },
     (err, res) => {
-      console.log('update ---------')
       if (err) return console.log('The API returned an error: ' + err)
       console.log(res)
     },
