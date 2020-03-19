@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node -r ts-node/register ./index.ts",
     "test": "jest",
-    "build": "tsc"
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "license": "MIT",
   "dependencies": {
