@@ -3,7 +3,9 @@
 > Refer to [Google Api - Sheets](https://developers.google.com/sheets/api/quickstart/nodejs).
 
 ## Usage
-Read and Write to gsheet.
+Turn on the Google Sheets API by following the instructions from link above.  
+Then download client configuration and save the file `credentials.json` to your working dir.
+
 
 ### Read
 ```javascript
