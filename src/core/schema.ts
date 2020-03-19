@@ -31,33 +31,4 @@ const createSchema = (input: TGridSchemaInput): TSchema => {
   return schema
 }
 
-describe('models', () => {
-  it('should be able to create a basic schema', () => {
-    const schema = createSchema({
-      range: 'B:D',
-      header: ['Field1', 'Field2', 'Field3'],
-    })
-
-    expect(schema).toMatchObject([
-      {
-        key: 'Field1',
-        __metadata: { column: 'B' },
-      },
-      {
-        key: 'Field2',
-        __metadata: { column: 'C' },
-      },
-      {
-        key: 'Field3',
-        __metadata: { column: 'D' },
-      },
-    ])
-  })
-
-  it('should be able to create a model from a schema', () => {
-
-  })
-  it('should be able to create a model and a schema from a single grid', () => {
-
-  })
-})
+export { createSchema }
