@@ -1,19 +1,5 @@
 import { createSchema } from '../src/core'
-import { TSchema } from '../src/core/schema'
-import { toJSONWithSchema } from '../src/core'
-
-type TModel<T> = {
-  getAll: () => ArrayLike<T>
-}
-type TGrid = ArrayLike<ArrayLike<string>>
-
-const createModel = (schema: TSchema, grid: TGrid): TModel<any> => {
-  return {
-    getAll: () => {
-      return toJSONWithSchema(schema, grid)
-    },
-  }
-}
+import { createModel } from '../src/core'
 
 const heroGrid = [
   ['Slardar', 'Roam', '888'],
