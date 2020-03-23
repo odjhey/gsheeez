@@ -1,11 +1,27 @@
 {
   "name": "gsheeez",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "0.0.1",
+  "description": "sheets FTW",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "author": "odz",
+  "keywords": ["gsheets"],
   "scripts": {
     "start": "node -r ts-node/register ./index.ts",
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/odjhey/gsheeez"
+  },
+  "files": ["lib/**/*"],
   "license": "MIT",
   "dependencies": {
     "googleapis": "39"

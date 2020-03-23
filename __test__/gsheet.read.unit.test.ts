@@ -1,6 +1,6 @@
 import mockData from './mock-data'
 
-import { toJSON, groupByKeys } from '../core'
+import { toJSON, groupByKeys } from '../src/core'
 
 const getGroupByKeys = toJson => {
   const grouped = groupByKeys(

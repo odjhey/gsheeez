@@ -1,8 +1,9 @@
 const fs = require('fs')
 const readline = require('readline')
+
 import { google } from 'googleapis'
 
-import { toJSON, groupByKeys } from './core'
+import { toJSON, groupByKeys } from './src/core'
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -86,22 +87,27 @@ function listMajors(auth) {
     },
     (err, res) => {
       if (err) return console.log('The API returned an error: ' + err)
+
+      // prints multi dimensional array representation of the grid data fromm sheets
       const rows = res.data.values
+      // console.log('raw data', rows)
 
-      // console.log('rows', rows)
-
+      // converts grid data to jsonlike object
       const toJson = toJSON(rows)
+      // console.log('toJSON', toJson)
+
       const keys = toJson.map(item => {
         return {
-          'Team Number': item['Team Number'],
-          'Team Name': item['Team Name'],
+          'Shipment No.:': item['Shipment No.:'],
+          'Delivery Order No.:': item['Delivery Order No.:'],
         }
       })
       const grouped = groupByKeys(keys, toJson)
       console.log('grouped')
       grouped.map(group => {
-        console.log('key', group.key)
-        console.log('items', group.items)
+        console.log('---------')
+        console.log(group.key)
+        console.log(group.items)
       })
     },
   )
@@ -113,7 +119,7 @@ function listMajors(auth) {
       range: 'Sheet1!O2',
       requestBody: {
         majorDimension: 'COLUMNS',
-        values: [['1', null, 'halaka']],
+        values: [['pending', 'done', 'todo', 'whatevs', 'partially delivered']],
       },
     },
     (err, res) => {
