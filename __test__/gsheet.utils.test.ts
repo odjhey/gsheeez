@@ -7,10 +7,12 @@ const grid = [
   ['Slark', 'Agi', '1'],
   ['King', 'Fairy', '99999'],
 ]
-//const heroSchema = createSchema({
-//  range: 'B:D',
-//  header: ['Name', 'Class', 'HP'],
-//})
+const groupDeep = (keys, grid) => {
+  /**
+   * insert implementation code here
+   **/
+  return []
+}
 
 describe('Helpers', () => {
   it('should be able break header from non headers', () => {
@@ -38,32 +40,54 @@ describe('Helpers', () => {
     })
   })
 
-  /**
-  it('should be able to compose a multilevel object from a complex grid', () => {
+  it('should be able to compose a 3 level object from a complex grid', () => {
     const complexGrid = [
-      ['H1', 'ITEM1', 'SIT1', 'A'],
-      ['H1', 'ITEM1', 'SIT2', 'B'],
-      ['H1', 'ITEM1', 'SIT3', 'C'],
-      ['H1', 'ITEM2', 'SIT1', 'D'],
-      ['H2', 'ITEM1', 'SIT1', 'E'],
+      ['hero', 'item', 'stat', 'val'],
+      ['Shaker', 'Null Talisman', 'INT', '+6'],
+      ['Shaker', 'Null Talisman', 'STR', '+3'],
+      ['Shaker', 'Null Talisman', 'AGI', '+3'],
+      ['Shaker', 'Dagger', 'Blink', 'zing'],
+      ['Mortred', 'Divine', 'Damage', '+9999'],
     ]
+
     const exp = [
       {
-        head: ['H1', 'ITEM1', 'SIT1', 'A'],
+        head: { value: ['Shaker', 'Null Talisman', 'INT', '+6'] },
         items: [
           {
-            value: ['H1', 'ITEM1', 'SIT1', 'A'],
+            value: ['Shaker', 'Null Talisman', 'INT', '+6'],
             subitems: [
-              ['H1', 'ITEM1', 'SIT1', 'A'],
-              ['H1', 'ITEM1', 'SIT2', 'B'],
-              ['H1', 'ITEM1', 'SIT3', 'C'],
+              { value: ['Shaker', 'Null Talisman', 'INT', '+6'] },
+              { value: ['Shaker', 'Null Talisman', 'STR', '+3'] },
+              { value: ['Shaker', 'Null Talisman', 'AGI', '+3'] },
             ],
+          },
+          {
+            value: ['Shaker', 'Dagger', 'Blink', 'zing'],
+            subitems: [{ value: ['Shaker', 'Dagger', 'Blink', 'zing'] }],
+          },
+        ],
+      },
+      {
+        head: { value: ['Mortred', 'Divine', 'Damage', '+9999'] },
+        items: [
+          {
+            value: ['Mortred', 'Divine', 'Damage', '+9999'],
+            subitems: [{ value: ['Mortred', 'Divine', 'Damage', '+9999'] }],
           },
         ],
       },
     ]
 
-    expect(false).toBe(true)
-  }) 
-  **/
+    const actual = groupDeep(
+      {
+        head: { key: 'hero' },
+        items: { key: 'item' },
+        subitems: { key: 'stat' },
+      },
+      complexGrid,
+    )
+
+    expect(actual).toEqual(exp)
+  })
 })
