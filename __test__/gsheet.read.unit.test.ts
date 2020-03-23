@@ -1,6 +1,7 @@
 import mockData from './mock-data'
 
-import { toJSON, groupByKeys } from '../src/core'
+import { splitGrid, getByKey, toJSON } from '../src/helpers'
+import { groupByKeys } from '../src/core'
 
 const getGroupByKeys = toJson => {
   const grouped = groupByKeys(

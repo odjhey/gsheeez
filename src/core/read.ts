@@ -1,26 +1,3 @@
-function toJSON(rows) {
-  //convert to json obj, header = idx 0
-  let toJson = []
-  let header = []
-  rows.forEach((row, rowIdx) => {
-    if (rowIdx === 0) {
-      header = row
-    } else {
-      let lineObj = {}
-
-      header.forEach((field, col) => {
-        lineObj[header[col]] = row[col]
-      })
-
-      lineObj['rowIdx'] = rowIdx
-
-      toJson.push(lineObj)
-    }
-  })
-
-  return toJson
-}
-
 function groupByKeys(keys, data) {
   //const distinctKeys = [ ...new Set(keys)]
   const distinctKeys = keys.reduce((collector = [], item) => {
@@ -59,6 +36,6 @@ function groupByKeys(keys, data) {
   return complete
 }
 
-const read = { toJSON, groupByKeys }
+const read = { groupByKeys }
 
 export default read

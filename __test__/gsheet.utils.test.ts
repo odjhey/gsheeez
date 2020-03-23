@@ -1,5 +1,5 @@
-import { splitGrid } from '../src/helpers'
-import { toJSON, groupByKeys } from '../src/core'
+import { splitGrid, getByKey, toJSON } from '../src/helpers'
+import { groupByKeys } from '../src/core'
 
 const grid = [
   ['name', 'class', 'hp'],
@@ -11,33 +11,6 @@ const grid = [
 //  range: 'B:D',
 //  header: ['Name', 'Class', 'HP'],
 //})
-
-/** @Jonas
- *  Modify this function
- **/
-const getByKey = (key, grid) => {
-  const givenGrid = grid
-  const gridJson = toJSON(givenGrid)
-  const grouped = groupByKeys(
-    gridJson.map(item => {
-      return {
-        name: item['name'],
-      }
-    }),
-    gridJson,
-  )
-
-  console.log(gridJson, key)
-  const fil = gridJson.filter(item => {
-    for (var keyField in key) {
-      if (item[keyField] === key[keyField]) {
-        return item
-      }
-    }
-  })
-
-  return fil[0]
-}
 
 describe('Helpers', () => {
   it('should be able break header from non headers', () => {

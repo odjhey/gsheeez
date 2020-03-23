@@ -42,7 +42,7 @@ const toJSONWithSchema = (schema: TSchema, grid) => {
       lineObj[header[col]] = row[col]
     })
 
-    lineObj['__metadata'] = { rowIdx: rowIdx + 1}
+    lineObj['__metadata'] = { rowIdx: rowIdx + 1 }
 
     toJson.push(lineObj)
   })
