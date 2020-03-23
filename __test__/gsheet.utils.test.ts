@@ -1,7 +1,8 @@
 import { splitGrid } from '../src/helpers'
+import { toJSON, groupByKeys } from '../src/core'
 
 const grid = [
-  ['Name', 'Class', 'HP'],
+  ['name', 'class', 'hp'],
   ['Slardar', 'Roam', '888'],
   ['Slark', 'Agi', '1'],
   ['King', 'Fairy', '99999'],
@@ -10,6 +11,26 @@ const grid = [
 //  range: 'B:D',
 //  header: ['Name', 'Class', 'HP'],
 //})
+
+/** @Jonas
+ *  Modify this function
+ **/
+const getByKey = (key, grid) => {
+  const givenGrid = grid
+  const gridJson = toJSON(givenGrid)
+  const grouped = groupByKeys(
+    gridJson.map(item => {
+      return {
+        name: item['name'],
+      }
+    }),
+    gridJson,
+  )
+  console.log(gridJson, key)
+  const fil = gridJson.filter( item => key.name == item.name)
+
+  return fil[0]
+}
 
 describe('Helpers', () => {
   it('should be able break header from non headers', () => {
@@ -20,4 +41,49 @@ describe('Helpers', () => {
     expect(header).toEqual(heroHeader)
     expect(body).toEqual(heroes)
   })
+
+  it('should get item by key', () => {
+    const item = getByKey({ name: 'Slark' }, grid)
+    expect(item).toMatchObject({
+      name: 'Slark',
+      class: 'Agi',
+      hp: '1',
+    })
+
+    const itemByClass = getByKey({ class: 'Roam' }, grid)
+    expect(item).toMatchObject({
+      name: 'Slardar',
+      class: 'Roam',
+      hp: '888',
+    })
+  })
+
+  /**
+  it('should be able to compose a multilevel object from a complex grid', () => {
+    const complexGrid = [
+      ['H1', 'ITEM1', 'SIT1', 'A'],
+      ['H1', 'ITEM1', 'SIT2', 'B'],
+      ['H1', 'ITEM1', 'SIT3', 'C'],
+      ['H1', 'ITEM2', 'SIT1', 'D'],
+      ['H2', 'ITEM1', 'SIT1', 'E'],
+    ]
+    const exp = [
+      {
+        head: ['H1', 'ITEM1', 'SIT1', 'A'],
+        items: [
+          {
+            value: ['H1', 'ITEM1', 'SIT1', 'A'],
+            subitems: [
+              ['H1', 'ITEM1', 'SIT1', 'A'],
+              ['H1', 'ITEM1', 'SIT2', 'B'],
+              ['H1', 'ITEM1', 'SIT3', 'C'],
+            ],
+          },
+        ],
+      },
+    ]
+
+    expect(false).toBe(true)
+  }) 
+  **/
 })
