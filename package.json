@@ -9,6 +9,7 @@
   "scripts": {
     "start": "node -r ts-node/register ./index.ts",
     "test": "jest",
+    "test:w": "jest --watch",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
     "prepare": "npm run build",

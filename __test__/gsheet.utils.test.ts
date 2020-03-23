@@ -26,8 +26,15 @@ const getByKey = (key, grid) => {
     }),
     gridJson,
   )
+
   console.log(gridJson, key)
-  const fil = gridJson.filter( item => key.name == item.name)
+  const fil = gridJson.filter(item => {
+    for (var keyField in key) {
+      if (item[keyField] === key[keyField]) {
+        return item
+      }
+    }
+  })
 
   return fil[0]
 }
@@ -51,7 +58,7 @@ describe('Helpers', () => {
     })
 
     const itemByClass = getByKey({ class: 'Roam' }, grid)
-    expect(item).toMatchObject({
+    expect(itemByClass).toMatchObject({
       name: 'Slardar',
       class: 'Roam',
       hp: '888',
