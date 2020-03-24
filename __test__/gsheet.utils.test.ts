@@ -144,6 +144,6 @@ describe('Helpers', () => {
       complexGrid,
     )
 
-    //expect(actual).toEqual(exp)
+    expect(actual).toEqual(exp)
   })
 })
