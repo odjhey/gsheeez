@@ -33,4 +33,16 @@ describe('Models', () => {
       { Name: 'King', Class: 'Fairy', HP: '99999', __metadata: { rowIdx: 3 } },
     ])
   })
+
+  it('should be able to read using a filter ', () => {
+    const testSchema = heroSchema
+    const heroes = heroGrid
+    const heroModel = createModel(testSchema, heroes)
+
+    const slardar = heroModel.get({ Name: 'Slardar' })
+
+    expect(slardar).toEqual(
+      { Name: 'Slardar', Class: 'Roam', HP: '888', __metadata: { rowIdx: 1 } }
+    )
+  })
 })
