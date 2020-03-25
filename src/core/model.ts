@@ -5,10 +5,27 @@ type TModel<T> = {
   getAll: () => ArrayLike<T>
   get: (filter) => T
   update: (obj: T, fields) => T
+  getChanges: () => TChangeRecords
+  __metadata: {
+    schema: TSchema
+  }
 }
 type TGrid = ArrayLike<ArrayLike<string>>
 
+type TChangeRecord = {
+  fieldname: string
+  value: { from: any; to: any }
+  __metadata: {
+    rowIdx: string
+    column: string
+  }
+}
+
+type TChangeRecords = Array<TChangeRecord>
+
 const createModel = (schema: TSchema, grid: TGrid): TModel<any> => {
+  const changes = []
+
   return {
     getAll: () => {
       return toJSONWithSchema(schema, grid)
@@ -16,12 +33,42 @@ const createModel = (schema: TSchema, grid: TGrid): TModel<any> => {
     get: createGetOne(schema, grid),
     update: (obj, fields) => {
       const newObj = Object.assign({}, obj)
+
       Object.keys(fields).forEach(f => {
-        //update this for Historical in the future
+        changes.push(
+          createChangeRecord(newObj[f], fields[f], {
+            fieldname: f,
+            rowIdx: newObj.__metadata.rowIdx,
+            column: getFieldFromSchema(f, schema).__metadata.column,
+          }),
+        )
+
         newObj[f] = fields[f]
       })
 
       return newObj
+    },
+    getChanges: () => {
+      return changes
+    },
+    __metadata: {
+      schema,
+    },
+  }
+}
+
+const getFieldFromSchema = (fieldname: string, schema: TSchema) => {
+  const sch = schema.filter(item => item.key === fieldname)
+  return sch[0]
+}
+
+const createChangeRecord = (from: any, to: any, info): TChangeRecord => {
+  return {
+    fieldname: info.fieldname,
+    value: { from, to },
+    __metadata: {
+      rowIdx: info.rowIdx,
+      column: info.column,
     },
   }
 }
