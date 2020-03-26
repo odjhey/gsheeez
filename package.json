@@ -5,7 +5,9 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "author": "odz",
-  "keywords": ["gsheets"],
+  "keywords": [
+    "gsheets"
+  ],
   "scripts": {
     "start": "node -r ts-node/register ./index.ts",
     "test": "jest",
@@ -22,10 +24,13 @@
     "type": "git",
     "url": "git+https://github.com/odjhey/gsheeez"
   },
-  "files": ["lib/**/*"],
+  "files": [
+    "lib/**/*"
+  ],
   "license": "MIT",
   "dependencies": {
-    "googleapis": "39"
+    "googleapis": "39",
+    "gsheeez": "odjhey/gsheeez"
   },
   "devDependencies": {
     "@types/jest": "^25.1.4",
