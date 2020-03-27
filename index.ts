@@ -30,10 +30,13 @@ purchOrderSheet
     })
 
     const model = createModel(schema)
-    model.setGridRefresh(() => {
-      return data
-    })
-    console.log(model.getAll())
+    model
+      .setGridRefresh(() => {
+        return data
+      })
+      .then(nan => {
+        console.log(model.getAll())
+      })
   })
   .catch(err => {
     console.error(err)

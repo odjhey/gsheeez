@@ -12,7 +12,7 @@ type TModel<T> = {
     schema: TSchema
   }
   setGrid: (grid: TGrid) => void
-  setGridRefresh: (refresh: () => TGrid) => void
+  setGridRefresh: (refresh: () => Promise<TGrid>) => Promise<any>
 }
 
 type TChangeRecord = {
@@ -55,8 +55,8 @@ const createModel = (schema: TSchema, _grid?: TGrid): TModel<any> => {
     setGrid: newGrid => {
       grid = newGrid
     },
-    setGridRefresh: refresh => {
-      grid = refresh()
+    setGridRefresh: async refresh => {
+      grid = await refresh()
     },
     getChanges: () => {
       return changes
