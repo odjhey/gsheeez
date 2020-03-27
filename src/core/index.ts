@@ -18,83 +18,91 @@ const util = require('util')
 
 const sheeez = conf => {
   const { scopes, token_path, creds_path, google } = conf
-  const createRead = (info, cb) => () => {
-    const exec = auth => {
-      const sheets = google.sheets({ version: 'v4', auth })
-      sheets.spreadsheets.values.get(
-        {
-          spreadsheetId: info.spreadsheetId,
-          range: info.range,
-        },
-        cb,
-      )
-    }
 
-    // Load client secrets from a local file.
-    fs.readFile(creds_path, (err, content) => {
-      if (err) return console.log('Error loading client secret file:', err)
-      // Authorize a client with credentials, then call the Google Sheets API.
-      authorize(JSON.parse(content), exec)
-    })
-
-    /**
-     * Create an OAuth2 client with the given credentials, and then execute the
-     * given callback function.
-     * @param {Object} credentials The authorization client credentials.
-     * @param {function} callback The callback to call with the authorized client.
-     */
-    function authorize(credentials, callback) {
-      const { client_secret, client_id, redirect_uris } = credentials.installed
-      const oAuth2Client = new google.auth.OAuth2(
-        client_id,
-        client_secret,
-        redirect_uris[0],
-      )
-
-      // Check if we have previously stored a token.
-      fs.readFile(token_path, (err, token) => {
-        if (err) return getNewToken(oAuth2Client, callback)
-        oAuth2Client.setCredentials(JSON.parse(token))
-        callback(oAuth2Client)
-      })
-    }
-
-    /**
-     * Get and store new token after prompting for user authorization, and then
-     * execute the given callback with the authorized OAuth2 client.
-     * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
-     * @param {getEventsCallback} callback The callback for the authorized client.
-     */
-    function getNewToken(oAuth2Client, callback) {
-      const authUrl = oAuth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: scopes,
-      })
-      console.log('Authorize this app by visiting this url:', authUrl)
-      const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-      })
-      rl.question('Enter the code from that page here: ', code => {
-        rl.close()
-        oAuth2Client.getToken(code, (err, token) => {
-          if (err)
-            return console.error(
-              'Error while trying to retrieve access token',
-              err,
+  const create = info => {
+    const grid = () => {
+      return new Promise((resolve, reject) => {
+        // Load client secrets from a local file.
+        fs.readFile(creds_path, (err, content) => {
+          if (err) return reject(err)
+          // Authorize a client with credentials, then call the Google Sheets API.
+          authorize(JSON.parse(content), auth => {
+            const sheets = google.sheets({ version: 'v4', auth })
+            sheets.spreadsheets.values.get(
+              {
+                spreadsheetId: info.spreadsheetId,
+                range: info.range,
+              },
+              (err, data) => {
+                if (err) return reject(err)
+                resolve(data)
+              },
             )
-          oAuth2Client.setCredentials(token)
-          // Store the token to disk for later program executions
-          fs.writeFile(token_path, JSON.stringify(token), err => {
-            if (err) return console.error(err)
-            console.log('Token stored to', token_path)
           })
-          callback(oAuth2Client)
         })
+
+        /**
+         * Create an OAuth2 client with the given credentials, and then execute the
+         * given callback function.
+         * @param {Object} credentials The authorization client credentials.
+         * @param {function} callback The callback to call with the authorized client.
+         */
+        function authorize(credentials, callback) {
+          const {
+            client_secret,
+            client_id,
+            redirect_uris,
+          } = credentials.installed
+          const oAuth2Client = new google.auth.OAuth2(
+            client_id,
+            client_secret,
+            redirect_uris[0],
+          )
+
+          // Check if we have previously stored a token.
+          fs.readFile(token_path, (err, token) => {
+            if (err) return getNewToken(oAuth2Client, callback)
+            oAuth2Client.setCredentials(JSON.parse(token))
+            callback(oAuth2Client)
+          })
+        }
+
+        /**
+         * Get and store new token after prompting for user authorization, and then
+         * execute the given callback with the authorized OAuth2 client.
+         * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
+         * @param {getEventsCallback} callback The callback for the authorized client.
+         */
+        function getNewToken(oAuth2Client, callback) {
+          const authUrl = oAuth2Client.generateAuthUrl({
+            access_type: 'offline',
+            scope: scopes,
+          })
+          console.log('Authorize this app by visiting this url:', authUrl)
+          const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+          })
+          rl.question('Enter the code from that page here: ', code => {
+            rl.close()
+            oAuth2Client.getToken(code, (err, token) => {
+              if (err) return reject(err)
+              oAuth2Client.setCredentials(token)
+              // Store the token to disk for later program executions
+              fs.writeFile(token_path, JSON.stringify(token), err => {
+                if (err) return reject(err)
+                console.log('Token stored to', token_path)
+              })
+              callback(oAuth2Client)
+            })
+          })
+        }
       })
     }
+
+    return { grid }
   }
-  return { createRead: createRead }
+  return { create }
 }
 
 export { sheeez }
