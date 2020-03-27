@@ -2,7 +2,7 @@
   "name": "gsheeez",
   "version": "0.0.1",
   "description": "sheets FTW",
-  "main": "lib/index.js",
+  "main": "lib/core/index.js",
   "types": "lib/index.d.ts",
   "author": "odz",
   "keywords": [
