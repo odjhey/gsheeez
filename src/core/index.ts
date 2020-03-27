@@ -21,7 +21,7 @@ const sheeez = conf => {
 
   const create = _info => {
     const info = _info
-    const grid = (): Promise<any> => {
+    const grid = (options = { headerLength: 0 }): Promise<any> => {
       return new Promise((resolve, reject) => {
         // Load client secrets from a local file.
         fs.readFile(creds_path, (err, content) => {
@@ -36,7 +36,16 @@ const sheeez = conf => {
               },
               (err, data) => {
                 if (err) return reject(err)
-                resolve(data)
+
+                if (options.headerLength > 0) {
+                  const header = data.data.values.splice(
+                    0,
+                    options.headerLength,
+                  )
+                  resolve(data.data.values)
+                } else {
+                  resolve(data.data.values)
+                }
               },
             )
           })

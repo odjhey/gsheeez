@@ -14,8 +14,8 @@ const purchOrderSheet = sheets.create({
 })
 
 purchOrderSheet
-  .grid()
-  .then(resp => {
+  .grid( { headerLength: 1} )
+  .then(data => {
     const schema = createSchema({
       range: purchOrderSheet.info.range,
       header: [
@@ -29,7 +29,7 @@ purchOrderSheet
       ],
     })
 
-    const model = createModel(schema, resp.data.values)
+    const model = createModel(schema, data)
     console.log(model.getAll())
   })
   .catch(err => {
