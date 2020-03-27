@@ -30,8 +30,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "googleapis": "39",
-    "gsheeez": "odjhey/gsheeez"
+    "googleapis": "39"
   },
   "devDependencies": {
     "@types/jest": "^25.1.4",
