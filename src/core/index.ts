@@ -19,8 +19,9 @@ const util = require('util')
 const sheeez = conf => {
   const { scopes, token_path, creds_path, google } = conf
 
-  const create = info => {
-    const grid = () => {
+  const create = _info => {
+    const info = _info
+    const grid = (): Promise<any> => {
       return new Promise((resolve, reject) => {
         // Load client secrets from a local file.
         fs.readFile(creds_path, (err, content) => {
@@ -100,7 +101,7 @@ const sheeez = conf => {
       })
     }
 
-    return { grid }
+    return { grid, info }
   }
   return { create }
 }

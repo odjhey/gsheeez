@@ -1,5 +1,5 @@
 import { google } from 'googleapis'
-import { sheeez } from './src/core'
+import { sheeez, createSchema, createModel } from './src/core'
 
 const sheets = sheeez({
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
@@ -15,8 +15,22 @@ const purchOrderSheet = sheets.create({
 
 purchOrderSheet
   .grid()
-  .then((resp: any) => {
-    console.log(resp.data)
+  .then(resp => {
+    const schema = createSchema({
+      range: purchOrderSheet.info.range,
+      header: [
+        'shipment',
+        'delivery',
+        'customer',
+        'cust_name',
+        'address',
+        'qty',
+        'sku',
+      ],
+    })
+
+    const model = createModel(schema, resp.data.values)
+    console.log(model.getAll())
   })
   .catch(err => {
     console.error(err)
