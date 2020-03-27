@@ -32,6 +32,8 @@ Then download client configuration and save the file `credentials.json` to your 
 ## API
 
 ## TODO
-1. add schema defs
-1. complete metadata
-1. move all to TypeScript
+1. ~~add schema defs~~
+1. ~~complete metadata~~ inprogress
+1. ~~move all to TypeScript~~ inprogress
+1. add multi sheet support
+1. figure out how to tackle sheet refresh
