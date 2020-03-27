@@ -1,6 +1,6 @@
 type TGridSchemaInput = {
   range: string
-  header: ArrayLike<string>
+  header: Array<string>
 }
 
 type TSchema = Array<{
@@ -31,7 +31,7 @@ const createSchema = (input: TGridSchemaInput): TSchema => {
   return schema
 }
 
-const toJSONWithSchema = (schema: TSchema, grid) => {
+const toJSONWithSchema = (schema: TSchema, grid: Array<Array<any>> = new Array()) => {
   //convert to json obj, header = idx 0
   let toJson = []
   let header = schema.map(item => item.key)

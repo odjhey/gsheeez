@@ -1,16 +1,18 @@
 import { toJSONWithSchema } from '.'
 import { TSchema } from './schema'
 
+type TGrid = Array<Array<any>>
+
 type TModel<T> = {
-  getAll: () => ArrayLike<T>
+  getAll: () => Array<T>
   get: (filter) => T
   update: (obj: T, fields) => T
   getChanges: () => TChangeRecords
   __metadata: {
     schema: TSchema
   }
+  setGrid: (grid: TGrid) => void
 }
-type TGrid = ArrayLike<ArrayLike<string>>
 
 type TChangeRecord = {
   fieldname: string
@@ -23,8 +25,9 @@ type TChangeRecord = {
 
 type TChangeRecords = Array<TChangeRecord>
 
-const createModel = (schema: TSchema, grid: TGrid): TModel<any> => {
-  const changes = []
+const createModel = (schema: TSchema, _grid?: TGrid): TModel<any> => {
+  let changes = []
+  let grid: TGrid = _grid
 
   return {
     getAll: () => {
@@ -47,6 +50,9 @@ const createModel = (schema: TSchema, grid: TGrid): TModel<any> => {
       })
 
       return newObj
+    },
+    setGrid: newGrid => {
+      grid = newGrid
     },
     getChanges: () => {
       return changes

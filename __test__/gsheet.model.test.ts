@@ -20,6 +20,27 @@ describe('Models', () => {
     expect(heroModel).not.toBeUndefined()
   })
 
+  it('should be able to create a model with delayed data pops', () => {
+    const testSchema = heroSchema
+    const heroes = heroGrid
+    const heroModel = createModel(testSchema)
+
+    const allHeroes = heroModel.getAll()
+    expect(allHeroes).toEqual([])
+
+    heroModel.setGrid(heroGrid)
+
+    const allHeroesUpdated = heroModel.getAll()
+    expect(allHeroesUpdated).toEqual([
+      { Name: 'Slardar', Class: 'Roam', HP: '888', __metadata: { rowIdx: 1 } },
+      { Name: 'Slark', Class: 'Agi', HP: '1', __metadata: { rowIdx: 2 } },
+      { Name: 'King', Class: 'Fairy', HP: '99999', __metadata: { rowIdx: 3 } },
+    ])
+
+    expect(heroModel).not.toBeUndefined()
+
+  })
+
   it('should be able to read all data from a moodel', () => {
     const testSchema = heroSchema
     const heroes = heroGrid
