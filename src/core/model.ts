@@ -12,6 +12,7 @@ type TModel<T> = {
     schema: TSchema
   }
   setGrid: (grid: TGrid) => void
+  setGridRefresh: (refresh: () => TGrid) => void
 }
 
 type TChangeRecord = {
@@ -53,6 +54,9 @@ const createModel = (schema: TSchema, _grid?: TGrid): TModel<any> => {
     },
     setGrid: newGrid => {
       grid = newGrid
+    },
+    setGridRefresh: refresh => {
+      grid = refresh()
     },
     getChanges: () => {
       return changes

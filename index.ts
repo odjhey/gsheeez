@@ -14,7 +14,7 @@ const purchOrderSheet = sheets.create({
 })
 
 purchOrderSheet
-  .grid( { headerLength: 1} )
+  .grid({ headerLength: 1 })
   .then(data => {
     const schema = createSchema({
       range: purchOrderSheet.info.range,
@@ -29,7 +29,10 @@ purchOrderSheet
       ],
     })
 
-    const model = createModel(schema, data)
+    const model = createModel(schema)
+    model.setGridRefresh(() => {
+      return data
+    })
     console.log(model.getAll())
   })
   .catch(err => {
