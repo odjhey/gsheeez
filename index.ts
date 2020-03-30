@@ -73,7 +73,7 @@ purchOrderSheet
     })
 
     purchOrderSheet
-      .save({}, model.getChanges())
+      .save({ headerLength: 1 }, model.getChanges())
       .then(data => {
         console.log('afterSave', data.status)
       })

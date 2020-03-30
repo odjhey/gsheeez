@@ -58,7 +58,12 @@ const sheeez = conf => {
       })
     }
 
-    const save = (options = {}, changes): Promise<any> => {
+    const save = (
+      options = {
+        headerLength: 0,
+      },
+      changes,
+    ): Promise<any> => {
       return new Promise((resolve, reject) => {
         // Load client secrets from a local file.
         fs.readFile(creds_path, (err, content) => {
@@ -71,7 +76,9 @@ const sheeez = conf => {
               const requests = changes.map(change => {
                 const { __metadata } = change
                 const req = {
-                  range: __metadata.column + __metadata.rowIdx,
+                  range:
+                    __metadata.column +
+                    (__metadata.rowIdx + options.headerLength),
                   majorDimension: 'COLUMNS',
                   values: [[change.value.to]],
                 }
