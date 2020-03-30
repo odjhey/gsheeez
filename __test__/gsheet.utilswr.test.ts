@@ -65,6 +65,40 @@ describe('utils - write ', () => {
     ])
   })
 
+  it('should be able clear modification', () => {
+    const heroGrid = [
+      ['Slardar', 'Roam', '888'],
+      ['Slark', 'Agi', '1'],
+      ['King', 'Fairy', '99999'],
+    ]
+    const heroSchema = createSchema({
+      range: 'B:D',
+      header: ['Name', 'Class', 'HP'],
+    })
+
+    const heroes = heroGrid
+    const heroModel = createModel(heroSchema, heroes)
+
+    const fairy = heroModel.get({ Class: 'Fairy' })
+    const newFairy = heroModel.update(fairy, { HP: '20' })
+
+    const changes = heroModel.getChanges()
+
+    expect(changes).toEqual([
+      {
+        fieldname: 'HP',
+        value: { from: '99999', to: '20' },
+        __metadata: {
+          rowIdx: 3,
+          column: 'D',
+        },
+      },
+    ])
+
+    heroModel.clearChanges()
+    expect(heroModel.getChanges()).toEqual([])
+  })
+
   it('should be able to list MULTIPLE modifications', () => {
     const heroGrid = [
       ['Slardar', 'Roam', '888'],

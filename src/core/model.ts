@@ -8,11 +8,14 @@ type TModel<T> = {
   get: (filter) => T
   update: (obj: T, fields) => T
   getChanges: () => TChangeRecords
+  clearChanges:  () => void
+
+  setGrid: (grid: TGrid) => void
+  setGridRefresh: (refresh: () => Promise<TGrid>) => Promise<any>
+
   __metadata: {
     schema: TSchema
   }
-  setGrid: (grid: TGrid) => void
-  setGridRefresh: (refresh: () => Promise<TGrid>) => Promise<any>
 }
 
 type TChangeRecord = {
@@ -60,6 +63,9 @@ const createModel = (schema: TSchema, _grid?: TGrid): TModel<any> => {
     },
     getChanges: () => {
       return changes
+    },
+    clearChanges: () => {
+      changes = []
     },
     __metadata: {
       schema,
