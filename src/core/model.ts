@@ -8,7 +8,7 @@ type TModel<T> = {
   get: (filter) => T
   update: (obj: T, fields) => T
   getChanges: () => TChangeRecords
-  clearChanges:  () => void
+  clearChanges: () => void
 
   setGrid: (grid: TGrid) => void
   setGridRefresh: (refresh: () => Promise<TGrid>) => Promise<any>
@@ -37,7 +37,7 @@ const createModel = (schema: TSchema, _grid?: TGrid): TModel<any> => {
     getAll: () => {
       return toJSONWithSchema(schema, grid)
     },
-    get: createGetOne(schema, grid),
+    get: filter => createGetOne(schema, grid)(filter),
     update: (obj, fields) => {
       const newObj = Object.assign({}, obj)
 
