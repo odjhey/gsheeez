@@ -38,7 +38,6 @@ describe('Models', () => {
     ])
 
     expect(heroModel).not.toBeUndefined()
-
   })
 
   it('should be able to read all data from a moodel', () => {
@@ -62,8 +61,36 @@ describe('Models', () => {
 
     const slardar = heroModel.get({ Name: 'Slardar' })
 
-    expect(slardar).toEqual(
-      { Name: 'Slardar', Class: 'Roam', HP: '888', __metadata: { rowIdx: 1 } }
-    )
+    expect(slardar).toEqual({
+      Name: 'Slardar',
+      Class: 'Roam',
+      HP: '888',
+      __metadata: { rowIdx: 1 },
+    })
+  })
+
+  it('should be able to use a custom filter ', () => {
+    const testSchema = heroSchema
+    const heroes = heroGrid
+    const heroModel = createModel(testSchema, heroes)
+
+    const slardar = heroModel.filter(hero => {
+      return hero.Class == 'Agi' || hero.Name == 'King'
+    })
+
+    expect(slardar).toEqual([
+      {
+        Name: 'Slark',
+        Class: 'Agi',
+        HP: '1',
+        __metadata: { rowIdx: 2 },
+      },
+      {
+        Name: 'King',
+        Class: 'Fairy',
+        HP: '99999',
+        __metadata: { rowIdx: 3 },
+      },
+    ])
   })
 })

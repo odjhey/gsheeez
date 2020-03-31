@@ -6,6 +6,7 @@ type TGrid = Array<Array<any>>
 type TModel<T> = {
   getAll: () => Array<T>
   get: (filter) => T
+  filter: (filter) => Array<T>
   update: (obj: T, fields) => T
   getChanges: () => TChangeRecords
   clearChanges: () => void
@@ -55,6 +56,8 @@ const createModel = (schema: TSchema, _grid?: TGrid): TModel<any> => {
 
       return newObj
     },
+
+    filter: filterFn => createFilter(schema, grid)(filterFn),
     setGrid: newGrid => {
       grid = newGrid
     },
@@ -87,6 +90,12 @@ const createChangeRecord = (from: any, to: any, info): TChangeRecord => {
       column: info.column,
     },
   }
+}
+
+const createFilter = (schema, grid) => filter => {
+  const objs = toJSONWithSchema(schema, grid)
+  const filtered = objs.filter(filter)
+  return filtered
 }
 
 const createGetOne = (schema, grid) => filter => {
