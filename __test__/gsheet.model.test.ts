@@ -72,13 +72,14 @@ describe('Models', () => {
   it('should be able to use a custom filter ', () => {
     const testSchema = heroSchema
     const heroes = heroGrid
-    const heroModel = createModel(testSchema, heroes)
+    const heroModel = createModel(testSchema)
+    heroModel.setGrid(heroGrid)
 
-    const slardar = heroModel.filter(hero => {
+    const filtered = heroModel.filter(hero => {
       return hero.Class == 'Agi' || hero.Name == 'King'
     })
 
-    expect(slardar).toEqual([
+    expect(filtered).toEqual([
       {
         Name: 'Slark',
         Class: 'Agi',
