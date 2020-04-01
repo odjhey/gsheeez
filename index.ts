@@ -3,8 +3,8 @@ import { sheep, createSchema, createModel } from './src/core'
 
 sheep.configure({
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  token_path: 'token.json',
-  creds_path: 'credentials.json',
+  tokenPath: 'token.json',
+  credsPath: 'credentials.json',
   google,
 })
 
@@ -15,7 +15,7 @@ const purchOrderSheet = sheep.create({
 
 purchOrderSheet
   .grid({ headerLength: 1 })
-  .then(data => {
+  .then((data) => {
     const schema = createSchema({
       range: purchOrderSheet.info.range,
       header: [
@@ -36,17 +36,17 @@ purchOrderSheet
       .setGridRefresh(() => {
         return data
       })
-      .then(nan => {
+      .then((nan) => {
         console.log(model.getAll())
       })
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err)
   })
 
 purchOrderSheet
   .grid({ headerLength: 1 })
-  .then(data => {
+  .then((data) => {
     const schema = createSchema({
       range: purchOrderSheet.info.range,
       header: [
@@ -68,18 +68,18 @@ purchOrderSheet
       shipment: '5000000002',
       delivery: '3000000001',
     })
-    const newD1 = model.update(d1, {
+    model.update(d1, {
       qty: '20',
       sku_name: 'Syrup lang',
     })
 
     purchOrderSheet
       .save({ headerLength: 1 }, model.getChanges())
-      .then(data => {
+      .then((data) => {
         console.log('afterSave', data.status)
       })
-      .catch(err => console.log('err', err))
+      .catch((err) => console.log('err', err))
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err)
   })

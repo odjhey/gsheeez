@@ -19,7 +19,6 @@ describe('utils - write ', () => {
     heroModel.setGrid(heroes)
 
     const fairy = heroModel.get({ Class: 'Fairy' })
-    console.log(fairy)
     const newFairy = heroModel.update(fairy, { HP: '20' })
 
     //make sure to test that fairy is not modified

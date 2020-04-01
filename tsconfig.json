@@ -5,6 +5,7 @@
     "declaration": true,
     "outDir": "./lib",
     "strict": false,
+    "noUnusedLocals": true,
     "downlevelIteration": true
   },
   "include": ["src"],

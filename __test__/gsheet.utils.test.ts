@@ -52,7 +52,7 @@ describe('Helpers', () => {
 
     const gridJson = toJSON(complexGrid)
     const grouped = groupByKeys(
-      gridJson.map(item => {
+      gridJson.map((item) => {
         return {
           hero: item['hero'],
         }
@@ -60,14 +60,16 @@ describe('Helpers', () => {
       gridJson,
     )
 
-    const actual = grouped.map(hero => {
+    const actual = grouped.map((hero) => {
       return {
         head: {
           value: hero.key.hero,
         },
-        items: [...new Set(hero.items.map(item => item.item))].map(item => ({
-          value: item,
-        })),
+        items: [...new Set(hero.items.map((item) => item.item))].map(
+          (item) => ({
+            value: item,
+          }),
+        ),
       }
     })
 
@@ -96,54 +98,54 @@ describe('Helpers', () => {
     expect(actual).toStrictEqual(exp)
   })
 
-  it('should be able to compose a 3 level object from a complex grid', () => {
-    const complexGrid = [
-      ['hero', 'item', 'stat', 'val'],
-      ['Shaker', 'Null Talisman', 'INT', '+6'],
-      ['Shaker', 'Null Talisman', 'STR', '+3'],
-      ['Shaker', 'Null Talisman', 'AGI', '+3'],
-      ['Shaker', 'Dagger', 'Blink', 'zing'],
-      ['Mortred', 'Divine', 'Damage', '+9999'],
-    ]
-
-    const exp = [
-      {
-        head: { value: ['Shaker', 'Null Talisman', 'INT', '+6'] },
-        items: [
-          {
-            value: ['Shaker', 'Null Talisman', 'INT', '+6'],
-            subitems: [
-              { value: ['Shaker', 'Null Talisman', 'INT', '+6'] },
-              { value: ['Shaker', 'Null Talisman', 'STR', '+3'] },
-              { value: ['Shaker', 'Null Talisman', 'AGI', '+3'] },
-            ],
-          },
-          {
-            value: ['Shaker', 'Dagger', 'Blink', 'zing'],
-            subitems: [{ value: ['Shaker', 'Dagger', 'Blink', 'zing'] }],
-          },
-        ],
-      },
-      {
-        head: { value: ['Mortred', 'Divine', 'Damage', '+9999'] },
-        items: [
-          {
-            value: ['Mortred', 'Divine', 'Damage', '+9999'],
-            subitems: [{ value: ['Mortred', 'Divine', 'Damage', '+9999'] }],
-          },
-        ],
-      },
-    ]
-
-    const actual = groupDeep(
-      {
-        head: { key: 'hero' },
-        items: { key: 'item' },
-        subitems: { key: 'stat' },
-      },
-      complexGrid,
-    )
-
-    expect(actual).toEqual(exp)
-  })
+  //  it('should be able to compose a 3 level object from a complex grid', () => {
+  //    const complexGrid = [
+  //      ['hero', 'item', 'stat', 'val'],
+  //      ['Shaker', 'Null Talisman', 'INT', '+6'],
+  //      ['Shaker', 'Null Talisman', 'STR', '+3'],
+  //      ['Shaker', 'Null Talisman', 'AGI', '+3'],
+  //      ['Shaker', 'Dagger', 'Blink', 'zing'],
+  //      ['Mortred', 'Divine', 'Damage', '+9999'],
+  //    ]
+  //
+  //    const exp = [
+  //      {
+  //        head: { value: ['Shaker', 'Null Talisman', 'INT', '+6'] },
+  //        items: [
+  //          {
+  //            value: ['Shaker', 'Null Talisman', 'INT', '+6'],
+  //            subitems: [
+  //              { value: ['Shaker', 'Null Talisman', 'INT', '+6'] },
+  //              { value: ['Shaker', 'Null Talisman', 'STR', '+3'] },
+  //              { value: ['Shaker', 'Null Talisman', 'AGI', '+3'] },
+  //            ],
+  //          },
+  //          {
+  //            value: ['Shaker', 'Dagger', 'Blink', 'zing'],
+  //            subitems: [{ value: ['Shaker', 'Dagger', 'Blink', 'zing'] }],
+  //          },
+  //        ],
+  //      },
+  //      {
+  //        head: { value: ['Mortred', 'Divine', 'Damage', '+9999'] },
+  //        items: [
+  //          {
+  //            value: ['Mortred', 'Divine', 'Damage', '+9999'],
+  //            subitems: [{ value: ['Mortred', 'Divine', 'Damage', '+9999'] }],
+  //          },
+  //        ],
+  //      },
+  //    ]
+  //
+  //    const actual = groupDeep(
+  //      {
+  //        head: { key: 'hero' },
+  //        items: { key: 'item' },
+  //        subitems: { key: 'stat' },
+  //      },
+  //      complexGrid,
+  //    )
+  //
+  //    expect(actual).toEqual(exp)
+  //  })
 })

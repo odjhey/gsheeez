@@ -2,26 +2,26 @@ type TSplitResult = Array<Array<any>>
 
 const splitGrid = (grid: Array<any>, hidx = 0): TSplitResult => {
   const header = grid[hidx]
-  let body = Array.from(grid)
+  const body = Array.from(grid)
   body.shift()
   return [header, body]
 }
 
-const toJSON = rows => {
-  //convert to json obj, header = idx 0
-  let toJson = []
+const toJSON = (rows) => {
+  // convert to json obj, header = idx 0
+  const toJson = []
   let header = []
   rows.forEach((row, rowIdx) => {
     if (rowIdx === 0) {
       header = row
     } else {
-      let lineObj = {}
+      const lineObj: any = {}
 
       header.forEach((field, col) => {
         lineObj[header[col]] = row[col]
       })
 
-      lineObj['rowIdx'] = rowIdx
+      lineObj.rowIdx = rowIdx
 
       toJson.push(lineObj)
     }
@@ -34,12 +34,15 @@ const getByKey = (key, grid) => {
   const givenGrid = grid
   const gridJson = toJSON(givenGrid)
 
-  const fil = gridJson.filter(item => {
-    for (var keyField in key) {
-      if (item[keyField] === key[keyField]) {
-        return item
-      }
-    }
+  const fil = gridJson.filter((item) => {
+    const pass = Object.keys(key)
+      .map((keyField) => {
+        return item[keyField] === key[keyField]
+      })
+      .reduce((accu, bool) => {
+        return bool && accu
+      }, true)
+    return pass
   })
 
   return fil[0]

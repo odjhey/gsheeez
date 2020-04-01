@@ -3,8 +3,8 @@ import { sheep } from '../src/core'
 it('should be able to configure global sheez instance', () => {
   const config = {
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-    token_path: 'token.json',
-    creds_path: 'credentials.json',
+    tokenPath: 'token.json',
+    credsPath: 'credentials.json',
     google: jest.fn(() => {}),
   }
 

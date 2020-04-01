@@ -1,5 +1,5 @@
 import read from './read'
-import { createSchema, toJSONWithSchema } from './schema'
+import { createSchema, toJSONWithSchema, TSchema } from './schema'
 import { createModel } from './model'
 import { toJSON } from '../helpers'
 
@@ -11,130 +11,73 @@ export { groupByKeys }
 export { createModel }
 export { toJSON }
 
-//TODO: ** this is for refactoring **//
+// TODO: ** this is for refactoring **//
 const fs = require('fs')
 const readline = require('readline')
-const util = require('util')
 
 type TConfiguration = {
   scopes: Array<string>
-  token_path: string
-  creds_path: string
+  tokenPath: string
+  credsPath: string
   google: any
 }
 
 type TSheep = {
   configure: (conf: TConfiguration) => void
   getConfig: () => TConfiguration
-  create: (info) => any //TSheepling
+  create: (info) => any // TSheepling
 }
 
-//type TSheepling = {
+// type TSheepling = {
 //  grid: () => any
 //  info: () => any
 //  save: () => any
-//}
+// }
 
 const sheep: TSheep = (() => {
   let conf: TConfiguration = {
     scopes: [],
-    token_path: '',
-    creds_path: '',
+    tokenPath: '',
+    credsPath: '',
     google: {},
   }
 
-  const configure = configuration => {
+  const configure = (configuration) => {
     conf = configuration
   }
 
-  const getConfig = () => {
-    return conf
-  }
+  const getConfig = () => conf
 
-  const create = _info => {
+  const create = (_info) => {
     const info = _info
-    const { scopes, token_path, creds_path, google } = conf
+    // const { scopes, tokenPath, credsPath, google } = conf
+    const { tokenPath, credsPath, google } = conf
 
-    const grid = (options = { headerLength: 0 }): Promise<any> => {
-      return new Promise((resolve, reject) => {
-        // Load client secrets from a local file.
-        fs.readFile(creds_path, (err, content) => {
-          if (err) return reject(err)
-          // Authorize a client with credentials, then call the Google Sheets API.
-          authorize(
-            JSON.parse(content),
-            auth => {
-              const sheets = google.sheets({ version: 'v4', auth })
-              sheets.spreadsheets.values.get(
-                {
-                  spreadsheetId: info.spreadsheetId,
-                  range: info.range,
-                },
-                (err, data) => {
-                  if (err) return reject(err)
-
-                  if (options.headerLength > 0) {
-                    const header = data.data.values.splice(
-                      0,
-                      options.headerLength,
-                    )
-                    resolve(data.data.values)
-                  } else {
-                    resolve(data.data.values)
-                  }
-                },
-              )
-            },
-            reject,
-          )
-        })
+    /**
+     * Get and store new token after prompting for user authorization, and then
+     * execute the given callback with the authorized OAuth2 client.
+     * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
+     * @param {getEventsCallback} callback The callback for the authorized client.
+     */
+    function getNewToken(oAuth2Client, callback, reject) {
+      // const authUrl = oAuth2Client.generateAuthUrl({
+      //   access_type: 'offline',
+      //   scope: scopes,
+      // })
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
       })
-    }
-
-    const save = (
-      options = {
-        headerLength: 0,
-      },
-      changes,
-    ): Promise<any> => {
-      return new Promise((resolve, reject) => {
-        // Load client secrets from a local file.
-        fs.readFile(creds_path, (err, content) => {
+      rl.question('Enter the code from that page here: ', (code) => {
+        rl.close()
+        oAuth2Client.getToken(code, (err, token) => {
           if (err) return reject(err)
-          // Authorize a client with credentials, then call the Google Sheets API.
-          authorize(
-            JSON.parse(content),
-            auth => {
-              const sheets = google.sheets({ version: 'v4', auth })
-              const requests = changes.map(change => {
-                const { __metadata } = change
-                const req = {
-                  range:
-                    __metadata.column +
-                    (__metadata.rowIdx + options.headerLength),
-                  majorDimension: 'COLUMNS',
-                  values: [[change.value.to]],
-                }
-                console.log('req', req)
-                return req
-              })
-
-              sheets.spreadsheets.values.batchUpdate(
-                {
-                  spreadsheetId: info.spreadsheetId,
-                  requestBody: {
-                    valueInputOption: 'USER_ENTERED',
-                    data: requests,
-                  },
-                },
-                (err, res) => {
-                  if (err) return reject(err)
-                  resolve(res)
-                },
-              )
-            },
-            reject,
-          )
+          oAuth2Client.setCredentials(token)
+          // Store the token to disk for later program executions
+          fs.writeFile(tokenPath, JSON.stringify(token), (werr) => {
+            if (werr) return reject(werr)
+          })
+          callback(oAuth2Client)
         })
       })
     }
@@ -147,6 +90,7 @@ const sheep: TSheep = (() => {
      */
     function authorize(credentials, callback, reject) {
       const { client_secret, client_id, redirect_uris } = credentials.installed
+      /* eslint camelcase: 'off' */
       const oAuth2Client = new google.auth.OAuth2(
         client_id,
         client_secret,
@@ -154,43 +98,91 @@ const sheep: TSheep = (() => {
       )
 
       // Check if we have previously stored a token.
-      fs.readFile(token_path, (err, token) => {
+      /* eslint consistent-return: 'off' */
+      fs.readFile(tokenPath, (err, token) => {
         if (err) return getNewToken(oAuth2Client, callback, reject)
         oAuth2Client.setCredentials(JSON.parse(token))
         callback(oAuth2Client)
       })
     }
 
-    /**
-     * Get and store new token after prompting for user authorization, and then
-     * execute the given callback with the authorized OAuth2 client.
-     * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
-     * @param {getEventsCallback} callback The callback for the authorized client.
-     */
-    function getNewToken(oAuth2Client, callback, reject) {
-      const authUrl = oAuth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: scopes,
-      })
-      console.log('Authorize this app by visiting this url:', authUrl)
-      const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-      })
-      rl.question('Enter the code from that page here: ', code => {
-        rl.close()
-        oAuth2Client.getToken(code, (err, token) => {
+    const grid = (options = { headerLength: 0 }): Promise<any> =>
+      new Promise((resolve, reject) => {
+        // Load client secrets from a local file.
+        fs.readFile(credsPath, (err, content) => {
           if (err) return reject(err)
-          oAuth2Client.setCredentials(token)
-          // Store the token to disk for later program executions
-          fs.writeFile(token_path, JSON.stringify(token), err => {
-            if (err) return reject(err)
-            console.log('Token stored to', token_path)
-          })
-          callback(oAuth2Client)
+          // Authorize a client with credentials, then call the Google Sheets API.
+          authorize(
+            JSON.parse(content),
+            (auth) => {
+              const sheets = google.sheets({ version: 'v4', auth })
+              sheets.spreadsheets.values.get(
+                {
+                  spreadsheetId: info.spreadsheetId,
+                  range: info.range,
+                },
+                (gerr, data) => {
+                  if (gerr) return reject(gerr)
+
+                  if (options.headerLength > 0) {
+                    data.data.values.splice(0, options.headerLength)
+                    resolve(data.data.values)
+                  } else {
+                    resolve(data.data.values)
+                  }
+                },
+              )
+            },
+            reject,
+          )
         })
       })
-    }
+
+    const save = (
+      options = {
+        headerLength: 0,
+      },
+      changes,
+    ): Promise<any> =>
+      new Promise((resolve, reject) => {
+        // Load client secrets from a local file.
+        fs.readFile(credsPath, (err, content) => {
+          if (err) return reject(err)
+          // Authorize a client with credentials, then call the Google Sheets API.
+          authorize(
+            JSON.parse(content),
+            (auth) => {
+              const sheets = google.sheets({ version: 'v4', auth })
+              const requests = changes.map((change) => {
+                const { __metadata } = change
+                const req = {
+                  range:
+                    __metadata.column +
+                    (__metadata.rowIdx + options.headerLength),
+                  majorDimension: 'COLUMNS',
+                  values: [[change.value.to]],
+                }
+                return req
+              })
+
+              sheets.spreadsheets.values.batchUpdate(
+                {
+                  spreadsheetId: info.spreadsheetId,
+                  requestBody: {
+                    valueInputOption: 'USER_ENTERED',
+                    data: requests,
+                  },
+                },
+                (bUErr, res) => {
+                  if (bUErr) return reject(bUErr)
+                  resolve(res)
+                },
+              )
+            },
+            reject,
+          )
+        })
+      })
 
     return { grid, info, save }
   }
@@ -199,3 +191,4 @@ const sheep: TSheep = (() => {
 })()
 
 export { sheep }
+export { TSchema }

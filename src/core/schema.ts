@@ -11,7 +11,7 @@ type TSchema = Array<{
 const createSchema = (input: TGridSchemaInput): TSchema => {
   const [from, to] = input.range.split(':')
   let token = from
-  let chars = []
+  const chars = []
   if (from.charCodeAt(0) <= to.charCodeAt(0)) {
     while (token <= to) {
       chars.push(token)
@@ -19,30 +19,28 @@ const createSchema = (input: TGridSchemaInput): TSchema => {
     }
   }
 
-  const schema = chars.map((char, idx) => {
-    return {
-      key: input.header[idx],
-      __metadata: {
-        column: char,
-      },
-    }
-  })
+  const schema = chars.map((char, idx) => ({
+    key: input.header[idx],
+    __metadata: {
+      column: char,
+    },
+  }))
 
   return schema
 }
 
-const toJSONWithSchema = (schema: TSchema, grid: Array<Array<any>> = new Array()) => {
-  //convert to json obj, header = idx 0
-  let toJson = []
-  let header = schema.map(item => item.key)
+const toJSONWithSchema = (schema: TSchema, grid: Array<Array<any>> = []) => {
+  // convert to json obj, header = idx 0
+  const toJson = []
+  const header = schema.map((item) => item.key)
   grid.forEach((row, rowIdx) => {
-    let lineObj = {}
+    const lineObj: any = {}
 
     header.forEach((field, col) => {
       lineObj[header[col]] = row[col]
     })
 
-    lineObj['__metadata'] = { rowIdx: rowIdx + 1 }
+    lineObj.__metadata = { rowIdx: rowIdx + 1 }
 
     toJson.push(lineObj)
   })
