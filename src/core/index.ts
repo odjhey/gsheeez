@@ -16,11 +16,44 @@ const fs = require('fs')
 const readline = require('readline')
 const util = require('util')
 
-const sheeez = conf => {
-  const { scopes, token_path, creds_path, google } = conf
+type TConfiguration = {
+  scopes: Array<string>
+  token_path: string
+  creds_path: string
+  google: any
+}
+
+type TSheep = {
+  configure: (conf: TConfiguration) => void
+  getConfig: () => TConfiguration
+  create: (info) => any //TSheepling
+}
+
+//type TSheepling = {
+//  grid: () => any
+//  info: () => any
+//  save: () => any
+//}
+
+const sheep: TSheep = (() => {
+  let conf: TConfiguration = {
+    scopes: [],
+    token_path: '',
+    creds_path: '',
+    google: {},
+  }
+
+  const configure = configuration => {
+    conf = configuration
+  }
+
+  const getConfig = () => {
+    return conf
+  }
 
   const create = _info => {
     const info = _info
+    const { scopes, token_path, creds_path, google } = conf
 
     const grid = (options = { headerLength: 0 }): Promise<any> => {
       return new Promise((resolve, reject) => {
@@ -161,7 +194,8 @@ const sheeez = conf => {
 
     return { grid, info, save }
   }
-  return { create }
-}
 
-export { sheeez }
+  return { create, getConfig, configure }
+})()
+
+export { sheep }

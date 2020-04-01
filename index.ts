@@ -1,14 +1,14 @@
 import { google } from 'googleapis'
-import { sheeez, createSchema, createModel } from './src/core'
+import { sheep, createSchema, createModel } from './src/core'
 
-const sheets = sheeez({
+sheep.configure({
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   token_path: 'token.json',
   creds_path: 'credentials.json',
   google,
 })
 
-const purchOrderSheet = sheets.create({
+const purchOrderSheet = sheep.create({
   spreadsheetId: '1ux7ttNVuTbMaIfcW4t8tZe9Ii17F-3khXjHR8Il2dGI',
   range: 'A:I',
 })
@@ -37,7 +37,7 @@ purchOrderSheet
         return data
       })
       .then(nan => {
-        //console.log(model.getAll())
+        console.log(model.getAll())
       })
   })
   .catch(err => {
@@ -69,7 +69,8 @@ purchOrderSheet
       delivery: '3000000001',
     })
     const newD1 = model.update(d1, {
-        qty: '20', sku_name: 'Syrup lang'
+      qty: '20',
+      sku_name: 'Syrup lang',
     })
 
     purchOrderSheet
