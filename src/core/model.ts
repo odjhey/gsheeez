@@ -89,12 +89,13 @@ const createFilter = (schema, grid, hashFn) => (filter) => {
 const makeCreateModel = (hashFn) => (
   schema: TSchema,
   _grid?: TGrid,
+  rowIdxs?: Array<Array<number>>,
 ): TModel<any> => {
   let changes = []
   let grid: TGrid = _grid
 
   return {
-    getAll: () => makeToJSONWithSchema(hashFn)(schema, grid),
+    getAll: () => makeToJSONWithSchema(hashFn)(schema, grid, rowIdxs),
     get: (filter) => createGetOne(schema, grid, hashFn)(filter),
     getById: (id) => createGetById(schema, grid, hashFn)(id),
     update: (obj, fields) => {
@@ -140,27 +141,48 @@ const makeCreateModelsFromBaseModel = (hashFn) => (
   const models = keySchema.map((kSchema) => {
     const baseSchema = baseModel.__metadata.schema
     // get unique entries of grid
-    const filteredGridByKey = baseModel.getGrid().reduce((newGrid, row) => {
-      // check if in array - only compare keys
-      const indexOfKeysInSchema = kSchema.map((col) => {
-        return baseSchema.find((element) => element.key === col.key).__metadata
-          .idx
-      })
+    const filteredGridByKey = baseModel
+      .getGrid()
+      .reduce((newGrid, row, reduceIdx) => {
+        // check if in array - only compare keys
+        const indexOfKeysInSchema = kSchema.map((col) => {
+          return baseSchema.find((element) => element.key === col.key)
+            .__metadata.idx
+        })
 
-      // compare indexes of row and accu
-      const alreadyInRecord = newGrid.find((newGridRow) => {
-        return indexOfKeysInSchema.reduce((isUniq, schemaIdx) => {
-          return newGridRow[schemaIdx] === row[schemaIdx] && isUniq
-        }, true)
-      })
+        // compare indexes of row and accu
+        const alreadyInRecord = newGrid.find((newGridRow) => {
+          //          return newGridRow.values.find((newGridRowVal) => {
+          //            return indexOfKeysInSchema.reduce((isUniq, schemaIdx) => {
+          //              return newGridRowVal[schemaIdx] === row[schemaIdx] && isUniq
+          //            }, true)
+          //          })
+          return indexOfKeysInSchema.reduce((isUniq, schemaIdx) => {
+            return newGridRow.values[schemaIdx] === row[schemaIdx] && isUniq
+          }, true)
+        })
 
-      if (!alreadyInRecord) {
-        newGrid.push(row)
-      } // else skip
+        if (!alreadyInRecord) {
+          newGrid.push({
+            values: row,
+            idxs: [reduceIdx],
+          })
+        } else {
+          alreadyInRecord.idxs.push(reduceIdx)
+        }
 
-      return newGrid
-    }, [])
-    return makeCreateModel(hashFn)(kSchema, filteredGridByKey)
+        return newGrid
+      }, [])
+
+    return makeCreateModel(hashFn)(
+      kSchema,
+      filteredGridByKey.map((g) => {
+        return g.values
+      }),
+      filteredGridByKey.map((g) => {
+        return g.idxs
+      }),
+    )
   })
   return models
 }

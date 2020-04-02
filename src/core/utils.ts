@@ -27,6 +27,7 @@ const castObjToSchema = (schema: TSchema, obj: any): any => {
 const makeToJSONWithSchema = (hashFn) => (
   schema: TSchema,
   grid: Array<Array<TData<any>>> = [],
+  rowIdxs?: Array<Array<number>>,
 ) => {
   // convert to json obj, header = idx 0
   const toJson = []
@@ -38,7 +39,11 @@ const makeToJSONWithSchema = (hashFn) => (
       lineObj[header[col]] = row[col]
     })
 
-    lineObj.__metadata = { rowIdx: rowIdx + 1 }
+    if (rowIdxs) {
+      lineObj.__metadata = { rowIdx: rowIdxs[rowIdx].map((r) => r + 1) }
+    } else {
+      lineObj.__metadata = { rowIdx: rowIdx + 1 }
+    }
 
     lineObj.__metadata.uid = hashFn(
       JSON.stringify(castObjToSchema(getSchemaKeys(schema), lineObj)),

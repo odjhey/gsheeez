@@ -246,6 +246,60 @@ describe('Models', () => {
   })
 
   it.todo('should be able to create a master data like model') //, () => { expect(false).toBe(true) })
+
+  it('should be able to suport multiple rowIdx', () => {
+    const grid = [
+      //     ['head', 'item', 'subitem'],
+      ['h1', 'i1', 's1'],
+      ['h1', 'i1', 's2'],
+      ['h1', 'i2', 's1'],
+      ['h2', 'i1', 's1'],
+    ]
+
+    const schema = createSchema({
+      range: 'B:D',
+      header: ['head', 'item', 'subitem'],
+    })
+
+    const model = createModel(schema, grid)
+
+    const schemas = [
+      createSchema({ range: 'B:B', header: ['head'] }),
+      createSchema({ range: 'B:C', header: ['head', 'item'] }),
+      createSchema({ range: 'B:D', header: ['head', 'item', 'subitem'] }),
+    ]
+    const models = createModelsFromBaseModel(schemas, model)
+    const [hModel] = models
+
+    expect(models.length).toBe(schemas.length)
+    expect(hModel.getAll()).toEqual([
+      {
+        head: 'h1',
+        __metadata: {
+          uid: 2,
+          rowIdx: [1, 2, 3],
+        },
+      },
+      {
+        head: 'h2',
+        __metadata: {
+          uid: 2,
+          rowIdx: [4],
+        },
+      },
+    ])
+    //    expect(iModel.getAll()).toEqual([
+    //      { head: 'h1', item: 'i1' },
+    //      { head: 'h1', item: 'i2' },
+    //      { head: 'h2', item: 'i1' },
+    //    ])
+    //    expect(sModel.getAll()).toEqual([
+    //      { head: 'h1', item: 'i1', subitem: 's1' },
+    //      { head: 'h1', item: 'i1', subitem: 's2' },
+    //      { head: 'h1', item: 'i2', subitem: 's1' },
+    //      { head: 'h2', item: 'i1', subitem: 's1' },
+    //    ])
+  })
 })
 
 describe('metadata of row values', () => {
