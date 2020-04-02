@@ -94,8 +94,8 @@ const makeCreateModel = (hashFn) => (
   let changes = []
   let grid: TGrid = _grid
 
-  const makeToJSON = (hashFn, rowIdxs) => (schema, grid) => {
-    return makeToJSONWithSchema(hashFn)(schema, grid, rowIdxs)
+  const makeToJSON = (phashFn, prowIdxs) => (pschema, pgrid) => {
+    return makeToJSONWithSchema(phashFn)(pschema, pgrid, prowIdxs)
   }
 
   return {

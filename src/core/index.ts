@@ -151,7 +151,6 @@ const sheep: TSheep = (() => {
             (auth) => {
               const sheets = google.sheets({ version: 'v4', auth })
               const requests = changes.map((change) => {
-                console.log('change', change)
                 const { __metadata } = change
                 const req = {
                   range:
@@ -160,7 +159,6 @@ const sheep: TSheep = (() => {
                   majorDimension: 'COLUMNS',
                   values: [[change.value.to]],
                 }
-                console.log('req', req)
                 return req
               })
 
