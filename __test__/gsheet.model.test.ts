@@ -106,10 +106,56 @@ describe('Models', () => {
     })
   })
 
+  it('should be able to assign UID via schema keys ', () => {
+    const hashFnMock = jest.fn((obj) => {
+      if (obj === JSON.stringify({ Name: 'Slardar' })) {
+        return 'slz8'
+      }
+      if (obj === JSON.stringify({ Name: 'Slark' })) {
+        return 'slar'
+      }
+      if (obj === JSON.stringify({ Name: 'King' })) {
+        return 'kinz'
+      }
+      return 8
+    })
+    const createModel = makeCreateModel(hashFnMock)
+
+    const testSchema = createSchema({
+      range: 'B:D',
+      header: ['Name', 'Class', 'HP'],
+      keys: ['Name'],
+    })
+
+    const heroes = heroGrid
+    const heroModel = createModel(testSchema, heroes)
+    const allHero = heroModel.getAll()
+
+    expect(allHero).toEqual([
+      {
+        Name: 'Slardar',
+        Class: 'Roam',
+        HP: '888',
+        __metadata: { rowIdx: 1, uid: 'slz8' },
+      },
+      {
+        Name: 'Slark',
+        Class: 'Agi',
+        HP: '1',
+        __metadata: { rowIdx: 2, uid: 'slar' },
+      },
+      {
+        Name: 'King',
+        Class: 'Fairy',
+        HP: '99999',
+        __metadata: { rowIdx: 3, uid: 'kinz' },
+      },
+    ])
+  })
+
   it('should be able to read using an id ', () => {
     const hashFnMock = jest.fn((obj) => {
-      
-      if (obj === JSON.stringify({Name: "Slardar"})) {
+      if (obj === JSON.stringify({ Name: 'Slardar' })) {
         return 'slz8'
       }
       return 2
@@ -200,7 +246,6 @@ describe('Models', () => {
   })
 
   it.todo('should be able to create a master data like model') //, () => { expect(false).toBe(true) })
-  it.todo('should be able to read by uid') //, () => { expect(false).toBe(true) })
 })
 
 describe('metadata of row values', () => {

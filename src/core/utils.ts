@@ -15,9 +15,7 @@ const getSchemaKeys = (schema: TSchema) => {
 }
 
 const castObjToSchema = (schema: TSchema, obj: any): any => {
-  const header = 
-    schema.
-    map((item) => item.key)
+  const header = schema.map((item) => item.key)
   let newObj = {}
   header.forEach((key) => {
     newObj[key] = obj[key]
