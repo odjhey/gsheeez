@@ -6,6 +6,7 @@ type TGrid = Array<Array<any>>
 type TModel<T> = {
   getAll: () => Array<T>
   get: (filter) => T
+  getById: (id) => T
   filter: (filter) => Array<T>
   update: (obj: T, fields) => T
   getChanges: () => TChangeRecords
@@ -30,6 +31,18 @@ type TChangeRecord = {
 }
 
 type TChangeRecords = Array<TChangeRecord>
+
+const createGetById = (schema, grid, hashFn) => (id) => {
+  const objs = makeToJSONWithSchema(hashFn)(schema, grid)
+  const filtered = objs.filter((obj) => {
+    return obj.__metadata.uid === id
+  })
+
+  if (filtered.length > 0) {
+    return filtered[0]
+  }
+  return null
+}
 
 const createGetOne = (schema, grid, hashFn) => (filter) => {
   const objs = makeToJSONWithSchema(hashFn)(schema, grid)
@@ -83,6 +96,7 @@ const makeCreateModel = (hashFn) => (
   return {
     getAll: () => makeToJSONWithSchema(hashFn)(schema, grid),
     get: (filter) => createGetOne(schema, grid, hashFn)(filter),
+    getById: (id) => createGetById(schema, grid, hashFn)(id),
     update: (obj, fields) => {
       const newObj = { ...obj }
 

@@ -16,7 +16,7 @@ const heroSchema = createSchema({
 })
 
 describe('Models', () => {
-  const hashFnMock = jest.fn((obj) => {})
+  const hashFnMock = jest.fn((obj) => '1')
   const createModel = makeCreateModel(hashFnMock)
   const createModelsFromBaseModel = makeCreateModelsFromBaseModel(() => 2)
 
@@ -39,9 +39,9 @@ describe('Models', () => {
 
     const allHeroesUpdated = heroModel.getAll()
     expect(allHeroesUpdated).toEqual([
-      { Name: 'Slardar', Class: 'Roam', HP: '888', __metadata: { rowIdx: 1 } },
-      { Name: 'Slark', Class: 'Agi', HP: '1', __metadata: { rowIdx: 2 } },
-      { Name: 'King', Class: 'Fairy', HP: '99999', __metadata: { rowIdx: 3 } },
+      { Name: 'Slardar', Class: 'Roam', HP: '888', __metadata: { rowIdx: 1, uid: '1' } },
+      { Name: 'Slark', Class: 'Agi', HP: '1', __metadata: { rowIdx: 2, uid: '1' } },
+      { Name: 'King', Class: 'Fairy', HP: '99999', __metadata: { rowIdx: 3, uid: '1' } },
     ])
 
     expect(heroModel).not.toBeUndefined()
@@ -55,9 +55,9 @@ describe('Models', () => {
     const allHeroes = heroModel.getAll()
 
     expect(allHeroes).toEqual([
-      { Name: 'Slardar', Class: 'Roam', HP: '888', __metadata: { rowIdx: 1 } },
-      { Name: 'Slark', Class: 'Agi', HP: '1', __metadata: { rowIdx: 2 } },
-      { Name: 'King', Class: 'Fairy', HP: '99999', __metadata: { rowIdx: 3 } },
+      { Name: 'Slardar', Class: 'Roam', HP: '888', __metadata: { rowIdx: 1, uid: '1' } },
+      { Name: 'Slark', Class: 'Agi', HP: '1', __metadata: { rowIdx: 2, uid: '1' } },
+      { Name: 'King', Class: 'Fairy', HP: '99999', __metadata: { rowIdx: 3, uid: '1' } },
     ])
   })
 
@@ -72,7 +72,23 @@ describe('Models', () => {
       Name: 'Slardar',
       Class: 'Roam',
       HP: '888',
-      __metadata: { rowIdx: 1 },
+      __metadata: { rowIdx: 1, uid: '1' },
+    })
+  })
+
+  it('should be able to read using an id ', () => {
+    const testSchema = heroSchema
+    const heroes = heroGrid
+    const heroModel = createModel(testSchema, heroes)
+
+    console.log(heroModel.getAll())
+    const slardar = heroModel.getById('1')
+
+    expect(slardar).toEqual({
+      Name: 'Slardar',
+      Class: 'Roam',
+      HP: '888',
+      __metadata: { rowIdx: 1, uid: '1' },
     })
   })
 
@@ -90,13 +106,13 @@ describe('Models', () => {
         Name: 'Slark',
         Class: 'Agi',
         HP: '1',
-        __metadata: { rowIdx: 2 },
+        __metadata: { rowIdx: 2, uid: '1' },
       },
       {
         Name: 'King',
         Class: 'Fairy',
         HP: '99999',
-        __metadata: { rowIdx: 3 },
+        __metadata: { rowIdx: 3, uid: '1' },
       },
     ])
   })

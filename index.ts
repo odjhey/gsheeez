@@ -42,6 +42,7 @@ purchOrderSheet
       })
       .then((nan) => {
         console.log(model.getAll())
+        console.log('try get by ID', model.getById( '6784e0e6121010a982ecef840444a285' ))
       })
   })
   .catch((err) => {
