@@ -82,7 +82,7 @@ describe('utils - write ', () => {
     const heroModel = createModel(heroSchema, heroes)
 
     const fairy = heroModel.get({ Class: 'Fairy' })
-    const newFairy = heroModel.update(fairy, { HP: '20' })
+    heroModel.update(fairy, { HP: '20' })
 
     const changes = heroModel.getChanges()
 
@@ -113,7 +113,7 @@ describe('utils - write ', () => {
     const heroModel = createModel(heroSchema, heroes)
 
     const fairy = heroModel.get({ Class: 'Fairy' })
-    const newFairy = heroModel.update(fairy, { HP: '20' })
+    heroModel.update(fairy, { HP: '20' })
 
     const changes = heroModel.getChanges()
 
@@ -147,10 +147,10 @@ describe('utils - write ', () => {
     const heroModel = createModel(heroSchema, heroes)
 
     const fairy = heroModel.get({ Class: 'Fairy' })
-    const newFairy = heroModel.update(fairy, { HP: '20', Class: 'FatWiz' })
+    heroModel.update(fairy, { HP: '20', Class: 'FatWiz' })
 
     const slards = heroModel.get({ Name: 'Slardar' })
-    const newSlards = heroModel.update(slards, { HP: '1' })
+    heroModel.update(slards, { HP: '1' })
 
     const changes = heroModel.getChanges()
 

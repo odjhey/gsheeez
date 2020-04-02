@@ -11,10 +11,12 @@ type TModel<T> = {
   clearChanges: () => void
 
   setGrid: (grid: TGrid) => void
+  getGrid: () => TGrid
   setGridRefresh: (refresh: () => Promise<TGrid>) => Promise<any>
 
   __metadata: {
-    schema: TSchema
+    schema: TSchema,
+    uid: any
   }
 }
 
@@ -71,7 +73,7 @@ const createFilter = (schema, grid) => (filter) => {
   return filtered
 }
 
-const createModel = (schema: TSchema, _grid?: TGrid): TModel<any> => {
+const makeCreateModel = ( cuid ) => (schema: TSchema, _grid?: TGrid): TModel<any> => {
   let changes = []
   let grid: TGrid = _grid
 
@@ -100,6 +102,7 @@ const createModel = (schema: TSchema, _grid?: TGrid): TModel<any> => {
     setGrid: (newGrid) => {
       grid = newGrid
     },
+    getGrid: () => grid,
     setGridRefresh: async (refresh) => {
       grid = await refresh()
     },
@@ -108,9 +111,41 @@ const createModel = (schema: TSchema, _grid?: TGrid): TModel<any> => {
       changes = []
     },
     __metadata: {
-      schema,
+      schema, uid: cuid()
     },
   }
 }
 
-export { createModel }
+const makeCreateModelsFromBaseModel = (cuid) => (
+  keySchema: Array<TSchema>,
+  baseModel: TModel<any>,
+): Array<TModel<any>> => {
+  const models = keySchema.map((kSchema) => {
+    const baseSchema = baseModel.__metadata.schema
+    //get unique entries of grid
+    const filteredGridByKey = baseModel.getGrid().reduce((newGrid, row) => {
+      //check if in array - only compare keys
+      const indexOfKeysInSchema = kSchema.map((col) => {
+        return baseSchema.find((element) => element.key === col.key).__metadata
+          .idx
+      })
+
+      //compare indexes of row and accu
+      const alreadyInRecord = newGrid.find((newGridRow) => {
+        return indexOfKeysInSchema.reduce((isUniq, schemaIdx) => {
+          return newGridRow[schemaIdx] === row[schemaIdx] && isUniq
+        }, true)
+      })
+
+      if (!alreadyInRecord) {
+        newGrid.push(row)
+      } //else skip
+
+      return newGrid
+    }, [])
+    return makeCreateModel(cuid)(kSchema, filteredGridByKey)
+  })
+  return models
+}
+
+export { makeCreateModel, makeCreateModelsFromBaseModel }

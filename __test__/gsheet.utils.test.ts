@@ -7,12 +7,13 @@ const grid = [
   ['Slark', 'Agi', '1'],
   ['King', 'Fairy', '99999'],
 ]
-const groupDeep = (keys, grid) => {
-  /**
-   * insert implementation code here
-   **/
-  return []
-}
+
+// const groupDeep = (keys, grid) => {
+//   /**
+//    * insert implementation code here
+//    **/
+//   return []
+// }
 
 describe('Helpers', () => {
   it('should be able break header from non headers', () => {

@@ -32,7 +32,7 @@ describe('gsheet', () => {
     const heroModel = createModel(heroSchema, heroes)
 
     const fairy = heroModel.get({ Class: 'Fairy' })
-    const newFairy = heroModel.update(fairy, { HP: '20' })
+    heroModel.update(fairy, { HP: '20' })
 
     await save(heroModel.getChanges(), mockSave)
 

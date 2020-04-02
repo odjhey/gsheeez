@@ -1,6 +1,5 @@
-import mockData from './mock-data'
-
-import { toJSON } from '../src/helpers'
+//import mockData from './mock-data'
+//import { toJSON } from '../src/helpers'
 
 const write = (sheetObj, cell, newValue) => {
 

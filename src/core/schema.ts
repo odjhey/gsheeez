@@ -5,7 +5,7 @@ type TGridSchemaInput = {
 
 type TSchema = Array<{
   key: string
-  __metadata: { column: string }
+  __metadata: { column: string; idx: number }
 }>
 
 const createSchema = (input: TGridSchemaInput): TSchema => {
@@ -23,6 +23,7 @@ const createSchema = (input: TGridSchemaInput): TSchema => {
     key: input.header[idx],
     __metadata: {
       column: char,
+      idx: idx,
     },
   }))
 
