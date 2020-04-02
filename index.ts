@@ -33,6 +33,7 @@ purchOrderSheet
         'sku',
         'sku_name',
       ],
+      keys: ['shipment', 'delivery', 'itemno']
     })
 
     const model = createModel(schema)
@@ -42,7 +43,7 @@ purchOrderSheet
       })
       .then((nan) => {
         console.log(model.getAll())
-        console.log('try get by ID', model.getById( '6784e0e6121010a982ecef840444a285' ))
+        console.log('try get by ID', model.getById( '45ad3495585fcb0cf6008112b860b742' ))
       })
   })
   .catch((err) => {
