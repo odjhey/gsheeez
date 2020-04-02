@@ -28,7 +28,7 @@ type TSheep = {
 // }
 
 const sheep: TSheep = (() => {
-  let hashFn = (obj) => 0
+  let hashFn = (obj) => obj
 
   let conf: TConfiguration = {
     scopes: [],
@@ -190,7 +190,7 @@ const sheep: TSheep = (() => {
 export { sheep }
 export { TSchema }
 
-const hashFn = sheep.getConfig().hashFn
+const { hashFn } = sheep.getConfig()
 const { groupByKeys } = read
 const createModel = makeCreateModel(hashFn)
 const createModelsFromBaseModel = makeCreateModelsFromBaseModel(hashFn)

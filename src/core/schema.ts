@@ -25,11 +25,12 @@ const createSchema = (input: TGridSchemaInput): TSchema => {
     __metadata: {
       column: char,
       idx,
-      isUniqueIdfier: input.keys
-        ? input.keys.find((k) => input.header[idx] === k)
-          ? true
-          : false
-        : false,
+      isUniqueIdfier: (() => {
+        if (input.keys && input.keys.find((k) => input.header[idx] === k)) {
+          return true
+        }
+        return false
+      })(),
     },
   }))
 
