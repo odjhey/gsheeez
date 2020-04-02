@@ -39,9 +39,24 @@ describe('Models', () => {
 
     const allHeroesUpdated = heroModel.getAll()
     expect(allHeroesUpdated).toEqual([
-      { Name: 'Slardar', Class: 'Roam', HP: '888', __metadata: { rowIdx: 1, uid: '1' } },
-      { Name: 'Slark', Class: 'Agi', HP: '1', __metadata: { rowIdx: 2, uid: '1' } },
-      { Name: 'King', Class: 'Fairy', HP: '99999', __metadata: { rowIdx: 3, uid: '1' } },
+      {
+        Name: 'Slardar',
+        Class: 'Roam',
+        HP: '888',
+        __metadata: { rowIdx: 1, uid: '1' },
+      },
+      {
+        Name: 'Slark',
+        Class: 'Agi',
+        HP: '1',
+        __metadata: { rowIdx: 2, uid: '1' },
+      },
+      {
+        Name: 'King',
+        Class: 'Fairy',
+        HP: '99999',
+        __metadata: { rowIdx: 3, uid: '1' },
+      },
     ])
 
     expect(heroModel).not.toBeUndefined()
@@ -55,9 +70,24 @@ describe('Models', () => {
     const allHeroes = heroModel.getAll()
 
     expect(allHeroes).toEqual([
-      { Name: 'Slardar', Class: 'Roam', HP: '888', __metadata: { rowIdx: 1, uid: '1' } },
-      { Name: 'Slark', Class: 'Agi', HP: '1', __metadata: { rowIdx: 2, uid: '1' } },
-      { Name: 'King', Class: 'Fairy', HP: '99999', __metadata: { rowIdx: 3, uid: '1' } },
+      {
+        Name: 'Slardar',
+        Class: 'Roam',
+        HP: '888',
+        __metadata: { rowIdx: 1, uid: '1' },
+      },
+      {
+        Name: 'Slark',
+        Class: 'Agi',
+        HP: '1',
+        __metadata: { rowIdx: 2, uid: '1' },
+      },
+      {
+        Name: 'King',
+        Class: 'Fairy',
+        HP: '99999',
+        __metadata: { rowIdx: 3, uid: '1' },
+      },
     ])
   })
 
@@ -77,18 +107,31 @@ describe('Models', () => {
   })
 
   it('should be able to read using an id ', () => {
-    const testSchema = heroSchema
+    const hashFnMock = jest.fn((obj) => {
+      
+      if (obj === JSON.stringify({Name: "Slardar"})) {
+        return 'slz8'
+      }
+      return 2
+    })
+    const createModel = makeCreateModel(hashFnMock)
+
+    const testSchema = createSchema({
+      range: 'B:D',
+      header: ['Name', 'Class', 'HP'],
+      keys: ['Name'],
+    })
+
     const heroes = heroGrid
     const heroModel = createModel(testSchema, heroes)
 
-    console.log(heroModel.getAll())
-    const slardar = heroModel.getById('1')
+    const slardar = heroModel.getById('slz8')
 
     expect(slardar).toEqual({
       Name: 'Slardar',
       Class: 'Roam',
       HP: '888',
-      __metadata: { rowIdx: 1, uid: '1' },
+      __metadata: { rowIdx: 1, uid: 'slz8' },
     })
   })
 

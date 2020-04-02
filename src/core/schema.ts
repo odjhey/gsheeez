@@ -1,11 +1,12 @@
 type TGridSchemaInput = {
   range: string
   header: Array<string>
+  keys?: Array<string>
 }
 
 type TSchema = Array<{
   key: string
-  __metadata: { column: string; idx: number }
+  __metadata: { column: string; idx: number; isUniqueIdfier: boolean }
 }>
 
 const createSchema = (input: TGridSchemaInput): TSchema => {
@@ -24,6 +25,11 @@ const createSchema = (input: TGridSchemaInput): TSchema => {
     __metadata: {
       column: char,
       idx,
+      isUniqueIdfier: input.keys
+        ? input.keys.find((k) => input.header[idx] === k)
+          ? true
+          : false
+        : false,
     },
   }))
 
