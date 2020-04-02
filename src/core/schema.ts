@@ -29,6 +29,8 @@ const createSchema = (input: TGridSchemaInput): TSchema => {
         if (input.keys && input.keys.find((k) => input.header[idx] === k)) {
           return true
         }
+        //no keys provided, make all fields a key
+        if (!input.keys) return true
         return false
       })(),
     },

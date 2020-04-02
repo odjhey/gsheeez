@@ -247,7 +247,7 @@ describe('Models', () => {
 
   it.todo('should be able to create a master data like model') //, () => { expect(false).toBe(true) })
 
-  it('should be able to suport multiple rowIdx', () => {
+  it('should be able to suport multiple rowIdxes', () => {
     const grid = [
       //     ['head', 'item', 'subitem'],
       ['h1', 'i1', 's1'],
@@ -264,7 +264,7 @@ describe('Models', () => {
     const model = createModel(schema, grid)
 
     const schemas = [
-      createSchema({ range: 'B:B', header: ['head'] }),
+      createSchema({ range: 'B:B', header: ['head'], keys: ['head'] }),
       createSchema({ range: 'B:C', header: ['head', 'item'] }),
       createSchema({ range: 'B:D', header: ['head', 'item', 'subitem'] }),
     ]
@@ -299,6 +299,59 @@ describe('Models', () => {
     //      { head: 'h1', item: 'i2', subitem: 's1' },
     //      { head: 'h2', item: 'i1', subitem: 's1' },
     //    ])
+  })
+
+  it('should be able to suport update of multiple rowIdx', () => {
+    const grid = [
+      //     ['head', 'item', 'subitem'],
+      ['h1', 'hh', 'i1', 's1'],
+      ['h1', 'hh', 'i1', 's2'],
+      ['h1', 'hh', 'i2', 's1'],
+      ['h2', 'beu', 'i1', 's1'],
+    ]
+
+    const schema = createSchema({
+      range: 'B:E',
+      header: ['head', 'hh', 'item', 'subitem'],
+    })
+
+    const model = createModel(schema, grid)
+
+    const schemas = [
+      createSchema({ range: 'B:C', header: ['head', 'hh'], keys: ['head'] }),
+      createSchema({
+        range: 'B:D',
+        header: ['head', 'hh', 'item'],
+        keys: ['head', 'item'],
+      }),
+    ]
+
+    const models = createModelsFromBaseModel(schemas, model)
+    const [hModel] = models
+
+    const h1 = hModel.get({ head: 'h1' })
+
+    hModel.update(h1, { hh: 'nah' })
+
+    const changes = hModel.getChanges()
+
+    expect(changes).toEqual([
+      {
+        fieldname: 'hh',
+        value: { from: 'hh', to: 'nah' },
+        __metadata: { rowIdx: [1], column: 'C' },
+      },
+      {
+        fieldname: 'hh',
+        value: { from: 'hh', to: 'nah' },
+        __metadata: { rowIdx: [2], column: 'C' },
+      },
+      {
+        fieldname: 'hh',
+        value: { from: 'hh', to: 'nah' },
+        __metadata: { rowIdx: [3], column: 'C' },
+      },
+    ])
   })
 })
 

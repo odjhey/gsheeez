@@ -32,8 +32,8 @@ type TChangeRecord = {
 
 type TChangeRecords = Array<TChangeRecord>
 
-const createGetById = (schema, grid, hashFn) => (id) => {
-  const objs = makeToJSONWithSchema(hashFn)(schema, grid)
+const createGetById = (schema, grid, toJSON) => (id) => {
+  const objs = toJSON(schema, grid)
   const filtered = objs.filter((obj) => {
     return obj.__metadata.uid === id
   })
@@ -44,8 +44,8 @@ const createGetById = (schema, grid, hashFn) => (id) => {
   return null
 }
 
-const createGetOne = (schema, grid, hashFn) => (filter) => {
-  const objs = makeToJSONWithSchema(hashFn)(schema, grid)
+const createGetOne = (schema, grid, toJSON) => (filter) => {
+  const objs = toJSON(schema, grid)
   const filtered = objs.filter((obj) => {
     let pass = true
 
@@ -80,8 +80,8 @@ const createChangeRecord = (from: any, to: any, info): TChangeRecord => ({
   },
 })
 
-const createFilter = (schema, grid, hashFn) => (filter) => {
-  const objs = makeToJSONWithSchema(hashFn)(schema, grid)
+const createFilter = (schema, grid, toJSON) => (filter) => {
+  const objs = toJSON(schema, grid)
   const filtered = objs.filter(filter)
   return filtered
 }
@@ -94,21 +94,29 @@ const makeCreateModel = (hashFn) => (
   let changes = []
   let grid: TGrid = _grid
 
+  const makeToJSON = (hashFn, rowIdxs) => (schema, grid) => {
+    return makeToJSONWithSchema(hashFn)(schema, grid, rowIdxs)
+  }
+
   return {
-    getAll: () => makeToJSONWithSchema(hashFn)(schema, grid, rowIdxs),
-    get: (filter) => createGetOne(schema, grid, hashFn)(filter),
-    getById: (id) => createGetById(schema, grid, hashFn)(id),
+    getAll: () => makeToJSON(hashFn, rowIdxs)(schema, grid),
+    get: (filter) =>
+      createGetOne(schema, grid, makeToJSON(hashFn, rowIdxs))(filter),
+    getById: (id) =>
+      createGetById(schema, grid, makeToJSON(hashFn, rowIdxs))(id),
     update: (obj, fields) => {
       const newObj = { ...obj }
 
       Object.keys(fields).forEach((f) => {
-        changes.push(
-          createChangeRecord(newObj[f], fields[f], {
-            fieldname: f,
-            rowIdx: newObj.__metadata.rowIdx,
-            column: getFieldFromSchema(f, schema).__metadata.column,
-          }),
-        )
+        newObj.__metadata.rowIdx.forEach((rid) => {
+          changes.push(
+            createChangeRecord(newObj[f], fields[f], {
+              fieldname: f,
+              rowIdx: [rid],
+              column: getFieldFromSchema(f, schema).__metadata.column,
+            }),
+          )
+        })
 
         newObj[f] = fields[f]
       })
@@ -116,7 +124,8 @@ const makeCreateModel = (hashFn) => (
       return newObj
     },
 
-    filter: (filterFn) => createFilter(schema, grid, hashFn)(filterFn),
+    filter: (filterFn) =>
+      createFilter(schema, grid, makeToJSON(hashFn, rowIdxs))(filterFn),
     setGrid: (newGrid) => {
       grid = newGrid
     },
