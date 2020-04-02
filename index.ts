@@ -1,11 +1,15 @@
 import { google } from 'googleapis'
 import { sheep, createSchema, createModel } from './src/core'
+import { MD5 } from 'crypto-js'
 
 sheep.configure({
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   tokenPath: 'token.json',
   credsPath: 'credentials.json',
   google,
+  hashFn: (obj) => {
+    return MD5(obj).toString()
+  },
 })
 
 const purchOrderSheet = sheep.create({
@@ -68,6 +72,7 @@ purchOrderSheet
       shipment: '5000000002',
       delivery: '3000000001',
     })
+
     model.update(d1, {
       qty: '20',
       sku_name: 'Syrup lang',

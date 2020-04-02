@@ -1,4 +1,5 @@
-import { TSchema, toJSONWithSchema } from '.'
+import { TSchema } from '.'
+import { makeToJSONWithSchema } from './utils'
 
 type TGrid = Array<Array<any>>
 
@@ -16,7 +17,6 @@ type TModel<T> = {
 
   __metadata: {
     schema: TSchema
-    uid: any
   }
 }
 
@@ -31,8 +31,8 @@ type TChangeRecord = {
 
 type TChangeRecords = Array<TChangeRecord>
 
-const createGetOne = (schema, grid) => (filter) => {
-  const objs = toJSONWithSchema(schema, grid)
+const createGetOne = (schema, grid, hashFn) => (filter) => {
+  const objs = makeToJSONWithSchema(hashFn)(schema, grid)
   const filtered = objs.filter((obj) => {
     let pass = true
 
@@ -67,13 +67,13 @@ const createChangeRecord = (from: any, to: any, info): TChangeRecord => ({
   },
 })
 
-const createFilter = (schema, grid) => (filter) => {
-  const objs = toJSONWithSchema(schema, grid)
+const createFilter = (schema, grid, hashFn) => (filter) => {
+  const objs = makeToJSONWithSchema(hashFn)(schema, grid)
   const filtered = objs.filter(filter)
   return filtered
 }
 
-const makeCreateModel = (cuid) => (
+const makeCreateModel = (hashFn) => (
   schema: TSchema,
   _grid?: TGrid,
 ): TModel<any> => {
@@ -81,8 +81,8 @@ const makeCreateModel = (cuid) => (
   let grid: TGrid = _grid
 
   return {
-    getAll: () => toJSONWithSchema(schema, grid),
-    get: (filter) => createGetOne(schema, grid)(filter),
+    getAll: () => makeToJSONWithSchema(hashFn)(schema, grid),
+    get: (filter) => createGetOne(schema, grid, hashFn)(filter),
     update: (obj, fields) => {
       const newObj = { ...obj }
 
@@ -101,7 +101,7 @@ const makeCreateModel = (cuid) => (
       return newObj
     },
 
-    filter: (filterFn) => createFilter(schema, grid)(filterFn),
+    filter: (filterFn) => createFilter(schema, grid, hashFn)(filterFn),
     setGrid: (newGrid) => {
       grid = newGrid
     },
@@ -115,12 +115,11 @@ const makeCreateModel = (cuid) => (
     },
     __metadata: {
       schema,
-      uid: cuid(),
     },
   }
 }
 
-const makeCreateModelsFromBaseModel = (cuid) => (
+const makeCreateModelsFromBaseModel = (hashFn) => (
   keySchema: Array<TSchema>,
   baseModel: TModel<any>,
 ): Array<TModel<any>> => {
@@ -147,7 +146,7 @@ const makeCreateModelsFromBaseModel = (cuid) => (
 
       return newGrid
     }, [])
-    return makeCreateModel(cuid)(kSchema, filteredGridByKey)
+    return makeCreateModel(hashFn)(kSchema, filteredGridByKey)
   })
   return models
 }

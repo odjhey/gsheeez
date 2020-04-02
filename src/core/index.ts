@@ -1,7 +1,7 @@
 import read from './read'
-import { createSchema, toJSONWithSchema, TSchema } from './schema'
+import { createSchema, TSchema } from './schema'
+import { makeToJSONWithSchema } from './utils'
 import { makeCreateModel, makeCreateModelsFromBaseModel } from './model'
-import { toJSON } from '../helpers'
 
 // TODO: ** this is for refactoring **//
 const fs = require('fs')
@@ -12,7 +12,7 @@ type TConfiguration = {
   tokenPath: string
   credsPath: string
   google: any
-  cuid: () => any
+  hashFn: (obj) => any
 }
 
 type TSheep = {
@@ -28,16 +28,19 @@ type TSheep = {
 // }
 
 const sheep: TSheep = (() => {
+  let hashFn = (obj) => 0
+
   let conf: TConfiguration = {
     scopes: [],
     tokenPath: '',
     credsPath: '',
     google: {},
-    cuid: () => {},
+    hashFn: (obj) => hashFn(obj),
   }
 
   const configure = (configuration) => {
     conf = configuration
+    hashFn = configuration.hashFn
   }
 
   const getConfig = () => conf
@@ -187,14 +190,13 @@ const sheep: TSheep = (() => {
 export { sheep }
 export { TSchema }
 
+const hashFn = sheep.getConfig().hashFn
 const { groupByKeys } = read
-const createModel = makeCreateModel(sheep.getConfig().cuid)
-const createModelsFromBaseModel = makeCreateModelsFromBaseModel(
-  sheep.getConfig().cuid,
-)
+const createModel = makeCreateModel(hashFn)
+const createModelsFromBaseModel = makeCreateModelsFromBaseModel(hashFn)
+const toJSONWithSchema = makeToJSONWithSchema(hashFn)
 
 export { createSchema }
 export { toJSONWithSchema }
 export { groupByKeys }
 export { createModel, createModelsFromBaseModel }
-export { toJSON }

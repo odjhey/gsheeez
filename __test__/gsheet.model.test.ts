@@ -1,5 +1,9 @@
 import { createSchema } from '../src/core'
-import { createModel, createModelsFromBaseModel } from '../src/core'
+
+import {
+  makeCreateModel,
+  makeCreateModelsFromBaseModel,
+} from '../src/core/model'
 
 const heroGrid = [
   ['Slardar', 'Roam', '888'],
@@ -12,6 +16,10 @@ const heroSchema = createSchema({
 })
 
 describe('Models', () => {
+  const hashFnMock = jest.fn((obj) => {})
+  const createModel = makeCreateModel(hashFnMock)
+  const createModelsFromBaseModel = makeCreateModelsFromBaseModel(() => 2)
+
   it('should be able to create a model from a schema', () => {
     const testSchema = heroSchema
     const heroes = heroGrid
@@ -133,5 +141,37 @@ describe('Models', () => {
   })
 
   it.todo('should be able to create a master data like model') //, () => { expect(false).toBe(true) })
-  it.todo( 'should be able to read by uid' )//, () => { expect(false).toBe(true) })
+  it.todo('should be able to read by uid') //, () => { expect(false).toBe(true) })
+})
+
+describe('metadata of row values', () => {
+  const hashFnMock = jest.fn((obj) => 3)
+  const createModel = makeCreateModel(hashFnMock)
+
+  it('should be able to generate correct sequence of metadata', () => {
+    const testSchema = heroSchema
+    const heroes = heroGrid
+    const heroModel = createModel(testSchema, heroes)
+
+    expect(heroModel.getAll()).toEqual([
+      {
+        Name: 'Slardar',
+        Class: 'Roam',
+        HP: '888',
+        __metadata: { rowIdx: 1, uid: 3 },
+      },
+      {
+        Name: 'Slark',
+        Class: 'Agi',
+        HP: '1',
+        __metadata: { rowIdx: 2, uid: 3 },
+      },
+      {
+        Name: 'King',
+        Class: 'Fairy',
+        HP: '99999',
+        __metadata: { rowIdx: 3, uid: 3 },
+      },
+    ])
+  })
 })

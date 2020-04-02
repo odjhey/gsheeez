@@ -7,6 +7,7 @@ describe('gsheet integ', () => {
       tokenPath: 'token.json',
       credsPath: 'credentials.json',
       google: jest.fn(() => {}),
+      hashFn: jest.fn(() => {}),
     }
 
     sheep.configure(config)
