@@ -15,7 +15,7 @@ type TModel<T> = {
   setGridRefresh: (refresh: () => Promise<TGrid>) => Promise<any>
 
   __metadata: {
-    schema: TSchema,
+    schema: TSchema
     uid: any
   }
 }
@@ -73,7 +73,10 @@ const createFilter = (schema, grid) => (filter) => {
   return filtered
 }
 
-const makeCreateModel = ( cuid ) => (schema: TSchema, _grid?: TGrid): TModel<any> => {
+const makeCreateModel = (cuid) => (
+  schema: TSchema,
+  _grid?: TGrid,
+): TModel<any> => {
   let changes = []
   let grid: TGrid = _grid
 
@@ -111,7 +114,8 @@ const makeCreateModel = ( cuid ) => (schema: TSchema, _grid?: TGrid): TModel<any
       changes = []
     },
     __metadata: {
-      schema, uid: cuid()
+      schema,
+      uid: cuid(),
     },
   }
 }
@@ -122,15 +126,15 @@ const makeCreateModelsFromBaseModel = (cuid) => (
 ): Array<TModel<any>> => {
   const models = keySchema.map((kSchema) => {
     const baseSchema = baseModel.__metadata.schema
-    //get unique entries of grid
+    // get unique entries of grid
     const filteredGridByKey = baseModel.getGrid().reduce((newGrid, row) => {
-      //check if in array - only compare keys
+      // check if in array - only compare keys
       const indexOfKeysInSchema = kSchema.map((col) => {
         return baseSchema.find((element) => element.key === col.key).__metadata
           .idx
       })
 
-      //compare indexes of row and accu
+      // compare indexes of row and accu
       const alreadyInRecord = newGrid.find((newGridRow) => {
         return indexOfKeysInSchema.reduce((isUniq, schemaIdx) => {
           return newGridRow[schemaIdx] === row[schemaIdx] && isUniq
@@ -139,7 +143,7 @@ const makeCreateModelsFromBaseModel = (cuid) => (
 
       if (!alreadyInRecord) {
         newGrid.push(row)
-      } //else skip
+      } // else skip
 
       return newGrid
     }, [])

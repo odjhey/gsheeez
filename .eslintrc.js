@@ -22,5 +22,6 @@ module.exports = {
     'import/no-unresolved': [0, {}],
     '@typescript-eslint/no-unused-vars': 'error',
     "no-undef": 0,
+    'spaced-comment': 0
   },
 }
