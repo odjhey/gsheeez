@@ -43,19 +43,19 @@ describe('Models', () => {
         Name: 'Slardar',
         Class: 'Roam',
         HP: '888',
-        __metadata: { rowIdx: 1, uid: '1' },
+        __metadata: { rowIdx: [1], uid: '1' },
       },
       {
         Name: 'Slark',
         Class: 'Agi',
         HP: '1',
-        __metadata: { rowIdx: 2, uid: '1' },
+        __metadata: { rowIdx: [2], uid: '1' },
       },
       {
         Name: 'King',
         Class: 'Fairy',
         HP: '99999',
-        __metadata: { rowIdx: 3, uid: '1' },
+        __metadata: { rowIdx: [3], uid: '1' },
       },
     ])
 
@@ -74,19 +74,19 @@ describe('Models', () => {
         Name: 'Slardar',
         Class: 'Roam',
         HP: '888',
-        __metadata: { rowIdx: 1, uid: '1' },
+        __metadata: { rowIdx: [1], uid: '1' },
       },
       {
         Name: 'Slark',
         Class: 'Agi',
         HP: '1',
-        __metadata: { rowIdx: 2, uid: '1' },
+        __metadata: { rowIdx: [2], uid: '1' },
       },
       {
         Name: 'King',
         Class: 'Fairy',
         HP: '99999',
-        __metadata: { rowIdx: 3, uid: '1' },
+        __metadata: { rowIdx: [3], uid: '1' },
       },
     ])
   })
@@ -102,7 +102,7 @@ describe('Models', () => {
       Name: 'Slardar',
       Class: 'Roam',
       HP: '888',
-      __metadata: { rowIdx: 1, uid: '1' },
+      __metadata: { rowIdx: [1], uid: '1' },
     })
   })
 
@@ -136,19 +136,19 @@ describe('Models', () => {
         Name: 'Slardar',
         Class: 'Roam',
         HP: '888',
-        __metadata: { rowIdx: 1, uid: 'slz8' },
+        __metadata: { rowIdx: [1], uid: 'slz8' },
       },
       {
         Name: 'Slark',
         Class: 'Agi',
         HP: '1',
-        __metadata: { rowIdx: 2, uid: 'slar' },
+        __metadata: { rowIdx: [2], uid: 'slar' },
       },
       {
         Name: 'King',
         Class: 'Fairy',
         HP: '99999',
-        __metadata: { rowIdx: 3, uid: 'kinz' },
+        __metadata: { rowIdx: [3], uid: 'kinz' },
       },
     ])
   })
@@ -177,7 +177,7 @@ describe('Models', () => {
       Name: 'Slardar',
       Class: 'Roam',
       HP: '888',
-      __metadata: { rowIdx: 1, uid: 'slz8' },
+      __metadata: { rowIdx: [1], uid: 'slz8' },
     })
   })
 
@@ -195,13 +195,13 @@ describe('Models', () => {
         Name: 'Slark',
         Class: 'Agi',
         HP: '1',
-        __metadata: { rowIdx: 2, uid: '1' },
+        __metadata: { rowIdx: [2], uid: '1' },
       },
       {
         Name: 'King',
         Class: 'Fairy',
         HP: '99999',
-        __metadata: { rowIdx: 3, uid: '1' },
+        __metadata: { rowIdx: [3], uid: '1' },
       },
     ])
   })
@@ -316,19 +316,19 @@ describe('metadata of row values', () => {
         Name: 'Slardar',
         Class: 'Roam',
         HP: '888',
-        __metadata: { rowIdx: 1, uid: 3 },
+        __metadata: { rowIdx: [1], uid: 3 },
       },
       {
         Name: 'Slark',
         Class: 'Agi',
         HP: '1',
-        __metadata: { rowIdx: 2, uid: 3 },
+        __metadata: { rowIdx: [2], uid: 3 },
       },
       {
         Name: 'King',
         Class: 'Fairy',
         HP: '99999',
-        __metadata: { rowIdx: 3, uid: 3 },
+        __metadata: { rowIdx: [3], uid: 3 },
       },
     ])
   })

@@ -76,8 +76,8 @@ purchOrderSheet
     })
 
     model.update(d1, {
-      qty: '20',
-      sku_name: 'Syrup lang',
+      qty: '30',
+      sku_name: 'for realz Syrup lang',
     })
 
     purchOrderSheet

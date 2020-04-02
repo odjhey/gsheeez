@@ -42,7 +42,7 @@ const makeToJSONWithSchema = (hashFn) => (
     if (rowIdxs) {
       lineObj.__metadata = { rowIdx: rowIdxs[rowIdx].map((r) => r + 1) }
     } else {
-      lineObj.__metadata = { rowIdx: rowIdx + 1 }
+      lineObj.__metadata = { rowIdx: [rowIdx + 1] }
     }
 
     lineObj.__metadata.uid = hashFn(

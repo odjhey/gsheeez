@@ -91,7 +91,7 @@ describe('utils - write ', () => {
         fieldname: 'HP',
         value: { from: '99999', to: '20' },
         __metadata: {
-          rowIdx: 3,
+          rowIdx: [3],
           column: 'D',
         },
       },
@@ -122,7 +122,7 @@ describe('utils - write ', () => {
         fieldname: 'HP',
         value: { from: '99999', to: '20' },
         __metadata: {
-          rowIdx: 3,
+          rowIdx: [3],
           column: 'D',
         },
       },
@@ -159,7 +159,7 @@ describe('utils - write ', () => {
         fieldname: 'HP',
         value: { from: '99999', to: '20' },
         __metadata: {
-          rowIdx: 3,
+          rowIdx: [3],
           column: 'D',
         },
       },
@@ -167,7 +167,7 @@ describe('utils - write ', () => {
         fieldname: 'Class',
         value: { from: 'Fairy', to: 'FatWiz' },
         __metadata: {
-          rowIdx: 3,
+          rowIdx: [3],
           column: 'C',
         },
       },
@@ -175,7 +175,7 @@ describe('utils - write ', () => {
         fieldname: 'HP',
         value: { from: '888', to: '1' },
         __metadata: {
-          rowIdx: 1,
+          rowIdx: [1],
           column: 'D',
         },
       },
