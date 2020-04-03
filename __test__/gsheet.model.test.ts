@@ -106,6 +106,43 @@ describe('Models', () => {
     })
   })
 
+  it.only('should be able to read columns after Z', () => {
+    const afterZGrid = [
+      ['Slardar', 'Roam', '888'],
+      ['Slark', 'Agi', '1'],
+      ['King', 'Fairy', '99999'],
+    ]
+    const afterZSchema = createSchema({
+      range: 'Y:AA',
+      header: ['Name', 'Class', 'HP'],
+    })
+
+    const model = createModel(afterZSchema, afterZGrid)
+
+    const alld = model.getAll()
+
+    expect(alld).toEqual([
+      {
+        Name: 'Slardar',
+        Class: 'Roam',
+        HP: '888',
+        __metadata: { rowIdx: [1], uid: '1' },
+      },
+      {
+        Name: 'Slark',
+        Class: 'Agi',
+        HP: '1',
+        __metadata: { rowIdx: [2], uid: '1' },
+      },
+      {
+        Name: 'King',
+        Class: 'Fairy',
+        HP: '99999',
+        __metadata: { rowIdx: [3], uid: '1' },
+      },
+    ])
+  })
+
   it('should be able to assign UID via schema keys ', () => {
     const hashFnMock = jest.fn((obj) => {
       if (obj === JSON.stringify({ Name: 'Slardar' })) {
@@ -303,11 +340,11 @@ describe('Models', () => {
 
   it('should be able to suport update of multiple rowIdx', () => {
     const grid = [
-      //     ['head', 'item', 'subitem'],
+      //     ['head', hh, 'item', 'subitem'],
       ['h1', 'hh', 'i1', 's1'],
       ['h1', 'hh', 'i1', 's2'],
-      ['h1', 'hh', 'i2', 's1'],
       ['h2', 'beu', 'i1', 's1'],
+      ['h1', 'hh', 'i2', 's1'],
     ]
 
     const schema = createSchema({
@@ -349,7 +386,7 @@ describe('Models', () => {
       {
         fieldname: 'hh',
         value: { from: 'hh', to: 'nah' },
-        __metadata: { rowIdx: [3], column: 'C' },
+        __metadata: { rowIdx: [4], column: 'C' },
       },
     ])
   })

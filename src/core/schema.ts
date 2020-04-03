@@ -1,3 +1,5 @@
+import charUtils from './charUtils'
+
 type TGridSchemaInput = {
   range: string
   header: Array<string>
@@ -11,14 +13,17 @@ type TSchema = Array<{
 
 const createSchema = (input: TGridSchemaInput): TSchema => {
   const [from, to] = input.range.split(':')
-  let token = from
-  const chars = []
-  if (from.charCodeAt(0) <= to.charCodeAt(0)) {
-    while (token <= to) {
-      chars.push(token)
-      token = String.fromCharCode(token.charCodeAt(0) + 1)
-    }
-  }
+  const { generateFromRange } = charUtils
+
+  //  let token = from
+  //  const chars = []
+  //  if (from.charCodeAt(0) <= to.charCodeAt(0)) {
+  //    while (token <= to) {
+  //      chars.push(token)
+  //      token = String.fromCharCode(token.charCodeAt(0) + 1)
+  //    }
+  //  }
+  const chars = generateFromRange(from, to)
 
   const schema = chars.map((char, idx) => ({
     key: input.header[idx],
