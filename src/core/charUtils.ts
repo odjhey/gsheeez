@@ -10,19 +10,17 @@ const charUtils = (() => {
     const getNextNum = (
       num,
     ): { curr: number; next: number; overflow: boolean } => {
-      if (num < max) {
-        return {
-          curr: num,
-          next: num + 1,
-          overflow: false,
-        }
-      } else {
-        return {
-          curr: num,
-          next: min,
-          overflow: true,
-        }
-      }
+      return num < max
+        ? {
+            curr: num,
+            next: num + 1,
+            overflow: false,
+          }
+        : {
+            curr: num,
+            next: min,
+            overflow: true,
+          }
     }
 
     const nextArrObj = arr.map((item) => {
@@ -33,20 +31,18 @@ const charUtils = (() => {
 
     const nextToken = nextArrObj
       .reverse()
-      .reduce((accu, item, idx, arr) => {
+      .reduce((accu, item, idx, myarr) => {
         if (idx === 0) {
           accu.push(item.next)
+        } else if (myarr[idx - 1].overflow) {
+          //if previous is overflow
+          accu.push(item.next)
         } else {
-          if (arr[idx - 1].overflow) {
-            //if previous is overflow
-            accu.push(item.next)
-          } else {
-            accu.push(item.curr)
-          }
+          accu.push(item.curr)
         }
 
         // last token
-        if (idx + 1 === arr.length && item.overflow) {
+        if (idx + 1 === myarr.length && item.overflow) {
           accu.push(min)
         }
         return accu
