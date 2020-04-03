@@ -35,6 +35,17 @@ const createSchema = (input: TGridSchemaInput): TSchema => {
     )
   }
 
+  //validate keys are in header
+  if (input.keys) {
+    input.keys.forEach((k) => {
+      if (!input.header.includes(k)) {
+        throw new Error(`Key ${k} not specified in header.`)
+      } else {
+        console.log('nice im found', k)
+      }
+    })
+  }
+
   const schema = chars.map((char, idx) => ({
     key: input.header[idx],
     __metadata: {

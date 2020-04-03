@@ -50,4 +50,17 @@ describe('Schema error guards', () => {
       'Range(2 columns - B:C) covers less than specified. (3 fields)',
     )
   })
+
+  it('should throw if key specified not in header fields', () => {
+    const fn = () => {
+      const schema = createSchema({
+        range: 'B:D',
+        header: ['Field1', 'Field2', 'Field3'],
+        keys: ['f2'],
+      })
+      console.log(schema)
+    }
+
+    expect(fn).toThrow('Key f2 not specified in header.')
+  })
 })
