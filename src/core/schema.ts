@@ -25,6 +25,16 @@ const createSchema = (input: TGridSchemaInput): TSchema => {
   //  }
   const chars = generateFromRange(from, to)
 
+  if (chars.length !== input.header.length) {
+    if (chars.length > input.header.length)
+      throw new Error(
+        `Range(${chars.length} columns) covers more than specified. (${input.header.length} fields)`,
+      )
+    throw new Error(
+      `Range(${chars.length} columns) covers less than specified. (${input.header.length} fields)`,
+    )
+  }
+
   const schema = chars.map((char, idx) => ({
     key: input.header[idx],
     __metadata: {
