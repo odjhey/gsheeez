@@ -28,10 +28,10 @@ const createSchema = (input: TGridSchemaInput): TSchema => {
   if (chars.length !== input.header.length) {
     if (chars.length > input.header.length)
       throw new Error(
-        `Range(${chars.length} columns) covers more than specified. (${input.header.length} fields)`,
+        `Range(${chars.length} columns - ${input.range}) covers more than specified. (${input.header.length} fields)`,
       )
     throw new Error(
-      `Range(${chars.length} columns) covers less than specified. (${input.header.length} fields)`,
+      `Range(${chars.length} columns - ${input.range}) covers less than specified. (${input.header.length} fields)`,
     )
   }
 

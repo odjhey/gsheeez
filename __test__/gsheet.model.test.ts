@@ -106,7 +106,7 @@ describe('Models', () => {
     })
   })
 
-  it.only('should be able to read columns after Z', () => {
+  it('should be able to read columns after Z', () => {
     const afterZGrid = [
       ['Slardar', 'Roam', '888'],
       ['Slark', 'Agi', '1'],
@@ -423,3 +423,37 @@ describe('metadata of row values', () => {
     ])
   })
 })
+
+describe( 'error handling' , () => {
+  const hashFnMock = jest.fn((obj) => '1')
+  const createModel = makeCreateModel(hashFnMock)
+  const createModelsFromBaseModel = makeCreateModelsFromBaseModel(() => 2)
+  it( 'should detect schema mismatch errors ' , () => {
+    const grid = [
+      //     ['head', 'item', 'subitem'],
+      ['h1', 'i1', 's1'],
+      ['h1', 'i1', 's2'],
+      ['h1', 'i2', 's1'],
+      ['h2', 'i1', 's1'],
+    ]
+
+    const schema = createSchema({
+      range: 'B:D',
+      header: ['head', 'item', 'subitem'],
+    })
+
+    const model = createModel(schema, grid)
+
+    const schemas = [
+      createSchema({ range: 'B:B', header: ['head'] }),
+      createSchema({ range: 'B:C', header: ['head2', 'item'] }),
+      createSchema({ range: 'B:D', header: ['head', 'item', 'subitem'] }),
+    ]
+
+    const fn = () => createModelsFromBaseModel(schemas, model)
+    expect(fn).toThrow('head2 not found in base schema.')
+
+  })
+})
+
+

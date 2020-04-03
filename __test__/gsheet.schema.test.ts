@@ -24,3 +24,30 @@ describe('Schema', () => {
   })
 })
 
+describe('Schema error guards', () => {
+  it('should throw if range mismatch (longer range)', () => {
+    const fn = () => {
+      createSchema({
+        range: 'B:E',
+        header: ['Field1', 'Field2', 'Field3'],
+      })
+    }
+
+    expect(fn).toThrow(
+      'Range(4 columns - B:E) covers more than specified. (3 fields)',
+    )
+  })
+
+  it('should throw if range mismatch (shorter range)', () => {
+    const fn = () => {
+      createSchema({
+        range: 'B:C',
+        header: ['Field1', 'Field2', 'Field3'],
+      })
+    }
+
+    expect(fn).toThrow(
+      'Range(2 columns - B:C) covers less than specified. (3 fields)',
+    )
+  })
+})
