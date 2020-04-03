@@ -155,8 +155,13 @@ const makeCreateModelsFromBaseModel = (hashFn) => (
       .reduce((newGrid, row, reduceIdx) => {
         // check if in array - only compare keys
         const indexOfKeysInSchema = kSchema.map((col) => {
-          return baseSchema.find((element) => element.key === col.key)
-            .__metadata.idx
+          const baseSchemaField = baseSchema.find(
+            (element) => element.key === col.key,
+          )
+          if (!baseSchemaField) {
+            throw new Error(`${col.key} not found in base schema.`)
+          }
+          return baseSchemaField.__metadata.idx
         })
 
         // compare indexes of row and accu
