@@ -1,6 +1,6 @@
 {
   "name": "gsheeez",
-  "version": "0.0.4b",
+  "version": "0.0.5",
   "description": "sheets FTW",
   "main": "lib/core/index.js",
   "types": "lib/index.d.ts",
