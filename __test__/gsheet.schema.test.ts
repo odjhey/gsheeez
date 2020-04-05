@@ -53,12 +53,11 @@ describe('Schema error guards', () => {
 
   it('should throw if key specified not in header fields', () => {
     const fn = () => {
-      const schema = createSchema({
+      createSchema({
         range: 'B:D',
         header: ['Field1', 'Field2', 'Field3'],
         keys: ['f2'],
       })
-      console.log(schema)
     }
 
     expect(fn).toThrow('Key f2 not specified in header.')

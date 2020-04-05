@@ -41,7 +41,7 @@ const createSchema = (input: TGridSchemaInput): TSchema => {
       if (!input.header.includes(k)) {
         throw new Error(`Key ${k} not specified in header.`)
       } else {
-        console.log('nice im found', k)
+        //console.log('nice im found', k)
       }
     })
   }
