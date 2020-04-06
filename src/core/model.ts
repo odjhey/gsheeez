@@ -16,6 +16,9 @@ type TModel<T> = {
   getGrid: () => TGrid
   setGridRefresh: (refresh: () => Promise<TGrid>) => Promise<any>
 
+  //recursive-ish
+  groupByKeys: () => any
+
   __metadata: {
     schema: TSchema
   }
@@ -101,6 +104,7 @@ const getIndexFromSchema = (
   })
 }
 
+/*eslint no-use-before-define: off */
 const makeCreateModel = (hashFn) => (
   schema: TSchema,
   _grid?: TGrid,
@@ -168,12 +172,26 @@ const makeCreateModel = (hashFn) => (
     clearChanges: () => {
       changes = []
     },
+
+    groupByKeys: () => {
+      return makeGroupByKeys(hashFn, model)()
+    },
+
     __metadata: {
       schema,
     },
   }
 
   return model
+}
+
+const makeGroupByKeys = (hashFn, baseModel) => () => {
+  const createFromBaseModel = makeCreateModelsFromBaseModel(hashFn)
+  const [newModel] = createFromBaseModel(
+    [baseModel.__metadata.schema],
+    baseModel,
+  )
+  return newModel
 }
 
 const groupByKey = (grid, keyGridIdx): Array<any> => {
@@ -198,6 +216,7 @@ const groupByKey = (grid, keyGridIdx): Array<any> => {
   }, [])
 }
 
+/*eslint no-use-before-define: off */
 const makeCreateModelsFromBaseModel = (hashFn) => (
   keySchema: Array<TSchema>,
   baseModel: TModel<any>,

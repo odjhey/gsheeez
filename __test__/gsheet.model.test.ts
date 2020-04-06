@@ -91,6 +91,38 @@ describe('Models', () => {
     ])
   })
 
+  it('should be able to read all data from a moodel (after Z)', () => {
+    const testSchema = createSchema({
+      range: 'Z:AB',
+      header: ['Name', 'Class', 'HP'],
+    })
+    const heroes = heroGrid
+    const heroModel = createModel(testSchema, heroes)
+
+    const allHeroes = heroModel.getAll()
+
+    expect(allHeroes).toEqual([
+      {
+        Name: 'Slardar',
+        Class: 'Roam',
+        HP: '888',
+        __metadata: { rowIdx: [1], uid: '1' },
+      },
+      {
+        Name: 'Slark',
+        Class: 'Agi',
+        HP: '1',
+        __metadata: { rowIdx: [2], uid: '1' },
+      },
+      {
+        Name: 'King',
+        Class: 'Fairy',
+        HP: '99999',
+        __metadata: { rowIdx: [3], uid: '1' },
+      },
+    ])
+  })
+
   it('should be able to read using a filter ', () => {
     const testSchema = heroSchema
     const heroes = heroGrid
@@ -215,6 +247,39 @@ describe('Models', () => {
       Class: 'Roam',
       HP: '888',
       __metadata: { rowIdx: [1], uid: 'slz8' },
+    })
+  })
+
+  it('should be able to read using an id (after Z)', () => {
+    const hashFnMock = jest.fn((obj) => {
+      if (obj === JSON.stringify({ Name: 'Slardar' })) {
+        return 'slz8'
+      }
+      return 2
+    })
+    const createModel = makeCreateModel(hashFnMock)
+
+    const testSchema = createSchema({
+      range: 'Z:AB',
+      header: ['Name', 'Class', 'HP'],
+      keys: ['Name'],
+    })
+
+    const heroes = [
+      ['Slardar', 'Roam', '888'],
+      ['Slardar', 'Roam', '888'],
+      ['Slark', 'Agi', '1'],
+      ['King', 'Fairy', '99999'],
+    ]
+    const heroModel = createModel(testSchema, heroes)
+
+    const slardar = heroModel.groupByKeys().getById('slz8')
+
+    expect(slardar).toEqual({
+      Name: 'Slardar',
+      Class: 'Roam',
+      HP: '888',
+      __metadata: { rowIdx: [1, 2], uid: 'slz8' },
     })
   })
 
@@ -424,11 +489,11 @@ describe('metadata of row values', () => {
   })
 })
 
-describe( 'error handling' , () => {
+describe('error handling', () => {
   const hashFnMock = jest.fn((obj) => '1')
   const createModel = makeCreateModel(hashFnMock)
   const createModelsFromBaseModel = makeCreateModelsFromBaseModel(() => 2)
-  it( 'should detect schema mismatch errors ' , () => {
+  it('should detect schema mismatch errors ', () => {
     const grid = [
       //     ['head', 'item', 'subitem'],
       ['h1', 'i1', 's1'],
@@ -452,8 +517,5 @@ describe( 'error handling' , () => {
 
     const fn = () => createModelsFromBaseModel(schemas, model)
     expect(fn).toThrow('head2 not found in base schema.')
-
   })
 })
-
-
