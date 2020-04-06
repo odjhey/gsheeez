@@ -86,6 +86,21 @@ const createFilter = (schema, grid, toJSON) => (filter) => {
   return filtered
 }
 
+const getIndexFromSchema = (
+  schema: TSchema,
+  baseSchema: TSchema,
+): Array<number> => {
+  return schema.map((col) => {
+    const baseSchemaField = baseSchema.find(
+      (element) => element.key === col.key,
+    )
+    if (!baseSchemaField) {
+      throw new Error(`${col.key} not found in base schema.`)
+    }
+    return baseSchemaField.__metadata.idx
+  })
+}
+
 const makeCreateModel = (hashFn) => (
   schema: TSchema,
   _grid?: TGrid,
@@ -94,9 +109,25 @@ const makeCreateModel = (hashFn) => (
   let changes = []
   let grid: TGrid = _grid
 
-  const makeToJSON = (phashFn, prowIdxs) => (pschema, pgrid) => {
-    return makeToJSONWithSchema(phashFn)(pschema, pgrid, prowIdxs)
+  const makeToJSON = (phashFn, groupingIdxs) => (pschema, pgrid) => {
+    return makeToJSONWithSchema(phashFn)(pschema, pgrid, groupingIdxs)
   }
+
+  //  const getRowIdxs = (): Array<Array<number>> => {
+  //    let idxs = []
+  //    if (rowIdxs && rowIdxs.length > 0) {
+  //      idxs = rowIdxs
+  //    } else {
+  //      idxs = getIndexFromSchema(schema, schema)
+  //    }
+  //
+  //    const filteredGridByKey = groupByKey(grid, idxs)
+  //    const retVal = filteredGridByKey.map((g) => {
+  //      return g.idxs
+  //    })
+  //    console.log('retVal', retVal)
+  //    return retVal
+  //  }
 
   return {
     getAll: () => makeToJSON(hashFn, rowIdxs)(schema, grid),
@@ -143,6 +174,28 @@ const makeCreateModel = (hashFn) => (
   }
 }
 
+const groupByKey = (grid, keyGridIdx): Array<any> => {
+  return grid.reduce((newGrid, row, reduceIdx) => {
+    // compare indexes of row and accu
+    const alreadyInRecord = newGrid.find((newGridRow) => {
+      return keyGridIdx.reduce((isUniq, schemaIdx) => {
+        return newGridRow.values[schemaIdx] === row[schemaIdx] && isUniq
+      }, true)
+    })
+
+    if (!alreadyInRecord) {
+      newGrid.push({
+        values: row,
+        idxs: [reduceIdx],
+      })
+    } else {
+      alreadyInRecord.idxs.push(reduceIdx)
+    }
+
+    return newGrid
+  }, [])
+}
+
 const makeCreateModelsFromBaseModel = (hashFn) => (
   keySchema: Array<TSchema>,
   baseModel: TModel<any>,
@@ -150,43 +203,10 @@ const makeCreateModelsFromBaseModel = (hashFn) => (
   const models = keySchema.map((kSchema) => {
     const baseSchema = baseModel.__metadata.schema
     // get unique entries of grid
-    const filteredGridByKey = baseModel
-      .getGrid()
-      .reduce((newGrid, row, reduceIdx) => {
-        // check if in array - only compare keys
-        const indexOfKeysInSchema = kSchema.map((col) => {
-          const baseSchemaField = baseSchema.find(
-            (element) => element.key === col.key,
-          )
-          if (!baseSchemaField) {
-            throw new Error(`${col.key} not found in base schema.`)
-          }
-          return baseSchemaField.__metadata.idx
-        })
-
-        // compare indexes of row and accu
-        const alreadyInRecord = newGrid.find((newGridRow) => {
-          //          return newGridRow.values.find((newGridRowVal) => {
-          //            return indexOfKeysInSchema.reduce((isUniq, schemaIdx) => {
-          //              return newGridRowVal[schemaIdx] === row[schemaIdx] && isUniq
-          //            }, true)
-          //          })
-          return indexOfKeysInSchema.reduce((isUniq, schemaIdx) => {
-            return newGridRow.values[schemaIdx] === row[schemaIdx] && isUniq
-          }, true)
-        })
-
-        if (!alreadyInRecord) {
-          newGrid.push({
-            values: row,
-            idxs: [reduceIdx],
-          })
-        } else {
-          alreadyInRecord.idxs.push(reduceIdx)
-        }
-
-        return newGrid
-      }, [])
+    const filteredGridByKey = groupByKey(
+      baseModel.getGrid(),
+      getIndexFromSchema(kSchema, baseSchema),
+    )
 
     return makeCreateModel(hashFn)(
       kSchema,
