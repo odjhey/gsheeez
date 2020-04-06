@@ -12,7 +12,7 @@
     "start": "node -r ts-node/register ./index.ts",
     "start:watch": "nodemon index.ts",
     "test": "jest",
-    "test:w": "jest --watch",
+    "test:watch": "jest --watch",
     "lint": "eslint 'src/**/*'",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
