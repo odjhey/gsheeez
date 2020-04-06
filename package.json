@@ -1,6 +1,6 @@
 {
   "name": "gsheeez",
-  "version": "0.0.7-beta.1",
+  "version": "0.0.7-beta.2",
   "description": "sheets FTW",
   "main": "lib/core/index.js",
   "types": "lib/index.d.ts",
@@ -21,8 +21,8 @@
     "preversion": "npm run format && npm run lint",
     "version": "npm run test && npm run format && git add -A src",
     "postversion": "git push && git push --tags",
-    "release": "standard-version",
-    "release:beta": "standard-version -p beta"
+    "release": "npm run format && npm run lint && npm run test && standard-version",
+    "release:beta": "npm run format && npm run lint && npm run test && standard-version -p beta"
   },
   "repository": {
     "type": "git",
