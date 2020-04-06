@@ -129,7 +129,7 @@ const makeCreateModel = (hashFn) => (
   //    return retVal
   //  }
 
-  return {
+  const model = {
     getAll: () => makeToJSON(hashFn, rowIdxs)(schema, grid),
     get: (filter) =>
       createGetOne(schema, grid, makeToJSON(hashFn, rowIdxs))(filter),
@@ -172,6 +172,8 @@ const makeCreateModel = (hashFn) => (
       schema,
     },
   }
+
+  return model
 }
 
 const groupByKey = (grid, keyGridIdx): Array<any> => {
@@ -220,5 +222,14 @@ const makeCreateModelsFromBaseModel = (hashFn) => (
   })
   return models
 }
+
+//const getAllGroupedByKeys = () => (baseModel) => {
+//  const [model] = createModelsFromBaseModel(
+//    baseModel.__metadata.schema,
+//    baseModel,
+//  )
+//
+//  return model.getAll()
+//}
 
 export { makeCreateModel, makeCreateModelsFromBaseModel }
