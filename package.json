@@ -16,7 +16,7 @@
     "lint": "eslint 'src/**/*'",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
-    "prepare": "npm run build",
+    "prepare": "npm run build --silent",
     "happy": "npm run format && npm run lint && npm run test",
     "prepublishOnly": "npm test",
     "preversion": "npm run format && npm run lint",
