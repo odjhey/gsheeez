@@ -93,7 +93,7 @@ const getIndexFromSchema = (
   schema: TSchema,
   baseSchema: TSchema,
 ): Array<number> => {
-  return schema.map((col) => {
+  const retVal = schema.map((col) => {
     const baseSchemaField = baseSchema.find(
       (element) => element.key === col.key,
     )
@@ -102,6 +102,8 @@ const getIndexFromSchema = (
     }
     return baseSchemaField.__metadata.idx
   })
+
+  return retVal
 }
 
 /*eslint no-use-before-define: off */
@@ -223,17 +225,37 @@ const makeCreateModelsFromBaseModel = (hashFn) => (
 ): Array<TModel<any>> => {
   const models = keySchema.map((kSchema) => {
     const baseSchema = baseModel.__metadata.schema
+    const idxFromSchema = getIndexFromSchema(kSchema, baseSchema)
+
     // get unique entries of grid
-    const filteredGridByKey = groupByKey(
-      baseModel.getGrid(),
-      getIndexFromSchema(kSchema, baseSchema),
-    )
+    const filteredGridByKey = groupByKey(baseModel.getGrid(), idxFromSchema)
+
+    //update kSchema, add baseIndex
+    const newSchemaWithBaseIdx = kSchema.map((item, idx) => {
+      return {
+        ...item,
+        __metadata: {
+          ...item.__metadata,
+          baseIdx: idxFromSchema[idx],
+        },
+      }
+    })
+
+    const filteredGrid = filteredGridByKey.map((g) => {
+      return g.values
+    })
+
+    const filteredGridByColumn = filteredGrid.map((row) => {
+      const newRow = []
+      idxFromSchema.forEach((i) => {
+        newRow.push(row[i])
+      })
+      return newRow
+    })
 
     return makeCreateModel(hashFn)(
-      kSchema,
-      filteredGridByKey.map((g) => {
-        return g.values
-      }),
+      newSchemaWithBaseIdx,
+      filteredGridByColumn,
       filteredGridByKey.map((g) => {
         return g.idxs
       }),

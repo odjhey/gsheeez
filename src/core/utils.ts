@@ -34,6 +34,7 @@ const makeToJSONWithSchema = (hashFn) => (
   const header = schema
     //.filter((item) => item.__metadata.isUniqueIdfier)
     .map((item) => item.key)
+
   grid.forEach((row, rowIdx) => {
     const lineObj: any = {}
 
