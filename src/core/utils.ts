@@ -58,5 +58,13 @@ const makeToJSONWithSchema = (hashFn) => (
   return toJson
 }
 
+const mergeSchema = (schemas) => {
+  const newSchema = schemas.flatMap((s) => s)
+  return newSchema.map((f, idx) => {
+    return { ...f, __metadata: { ...f.__metadata, idx } }
+  })
+}
+
 export { makeToJSONWithSchema }
 export { TData }
+export { mergeSchema }

@@ -1,6 +1,6 @@
 import read from './read'
 import { createSchema, TSchema } from './schema'
-import { makeToJSONWithSchema } from './utils'
+import { makeToJSONWithSchema, mergeSchema } from './utils'
 import { makeCreateModel, makeCreateModelsFromBaseModel } from './model'
 
 // TODO: ** this is for refactoring **//
@@ -200,3 +200,4 @@ export { createSchema }
 export { toJSONWithSchema }
 export { groupByKeys }
 export { createModel, createModelsFromBaseModel }
+export { mergeSchema }

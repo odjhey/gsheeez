@@ -8,7 +8,12 @@ type TGridSchemaInput = {
 
 type TSchema = Array<{
   key: string
-  __metadata: { column: string; idx: number; isUniqueIdfier: boolean }
+  __metadata: {
+    column: string
+    idx: number
+    isUniqueIdfier: boolean
+    baseIdx?: number
+  }
 }>
 
 const createSchema = (input: TGridSchemaInput): TSchema => {
