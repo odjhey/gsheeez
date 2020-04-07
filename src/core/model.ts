@@ -17,7 +17,7 @@ type TModel<T> = {
   setGridRefresh: (refresh: () => Promise<TGrid>) => Promise<any>
 
   //recursive-ish
-  groupByKeys: () => any
+  groupByKeys: (options?: { keysOnly: boolean }) => any
 
   __metadata: {
     schema: TSchema
@@ -89,7 +89,7 @@ const createFilter = (schema, grid, toJSON) => (filter) => {
   return filtered
 }
 
-const getIndexFromSchema = (
+const getIndexOfSchemaFromBaseSchema = (
   schema: TSchema,
   baseSchema: TSchema,
 ): Array<number> => {
@@ -118,22 +118,6 @@ const makeCreateModel = (hashFn) => (
   const makeToJSON = (phashFn, groupingIdxs) => (pschema, pgrid) => {
     return makeToJSONWithSchema(phashFn)(pschema, pgrid, groupingIdxs)
   }
-
-  //  const getRowIdxs = (): Array<Array<number>> => {
-  //    let idxs = []
-  //    if (rowIdxs && rowIdxs.length > 0) {
-  //      idxs = rowIdxs
-  //    } else {
-  //      idxs = getIndexFromSchema(schema, schema)
-  //    }
-  //
-  //    const filteredGridByKey = groupByKey(grid, idxs)
-  //    const retVal = filteredGridByKey.map((g) => {
-  //      return g.idxs
-  //    })
-  //    console.log('retVal', retVal)
-  //    return retVal
-  //  }
 
   const model = {
     getAll: () => makeToJSON(hashFn, rowIdxs)(schema, grid),
@@ -175,8 +159,8 @@ const makeCreateModel = (hashFn) => (
       changes = []
     },
 
-    groupByKeys: () => {
-      return makeGroupByKeys(hashFn, model)()
+    groupByKeys: (options = { keysOnly: false }) => {
+      return makeGroupByKeys(hashFn, model)(options)
     },
 
     __metadata: {
@@ -187,16 +171,17 @@ const makeCreateModel = (hashFn) => (
   return model
 }
 
-const makeGroupByKeys = (hashFn, baseModel) => () => {
+const makeGroupByKeys = (hashFn, baseModel) => (options) => {
   const createFromBaseModel = makeCreateModelsFromBaseModel(hashFn)
   const [newModel] = createFromBaseModel(
     [baseModel.__metadata.schema],
     baseModel,
+    options,
   )
   return newModel
 }
 
-const groupByKey = (grid, keyGridIdx): Array<any> => {
+const getGroupedGrid = (grid, keyGridIdx): Array<any> => {
   return grid.reduce((newGrid, row, reduceIdx) => {
     // compare indexes of row and accu
     const alreadyInRecord = newGrid.find((newGridRow) => {
@@ -220,18 +205,27 @@ const groupByKey = (grid, keyGridIdx): Array<any> => {
 
 /*eslint no-use-before-define: off */
 const makeCreateModelsFromBaseModel = (hashFn) => (
-  keySchema: Array<TSchema>,
+  schemas: Array<TSchema>,
   baseModel: TModel<any>,
+  options = { keysOnly: false },
 ): Array<TModel<any>> => {
-  const models = keySchema.map((kSchema) => {
+  const models = schemas.map((schema) => {
     const baseSchema = baseModel.__metadata.schema
-    const idxFromSchema = getIndexFromSchema(kSchema, baseSchema)
+
+    const schemaXoptions = schema.filter((s) => {
+      return options.keysOnly ? s.__metadata.isUniqueIdfier : true
+    })
+
+    const idxFromSchema = getIndexOfSchemaFromBaseSchema(
+      schemaXoptions,
+      baseSchema,
+    )
 
     // get unique entries of grid
-    const filteredGridByKey = groupByKey(baseModel.getGrid(), idxFromSchema)
+    const groupedGrid = getGroupedGrid(baseModel.getGrid(), idxFromSchema)
 
-    //update kSchema, add baseIndex
-    const newSchemaWithBaseIdx = kSchema.map((item, idx) => {
+    //update schema, add baseIndex
+    const newSchemaWithBaseIdx = schemaXoptions.map((item, idx) => {
       return {
         ...item,
         __metadata: {
@@ -241,11 +235,11 @@ const makeCreateModelsFromBaseModel = (hashFn) => (
       }
     })
 
-    const filteredGrid = filteredGridByKey.map((g) => {
+    const groupedGridVals = groupedGrid.map((g) => {
       return g.values
     })
 
-    const filteredGridByColumn = filteredGrid.map((row) => {
+    const gridFilteredByCol = groupedGridVals.map((row) => {
       const newRow = []
       idxFromSchema.forEach((i) => {
         newRow.push(row[i])
@@ -255,8 +249,8 @@ const makeCreateModelsFromBaseModel = (hashFn) => (
 
     return makeCreateModel(hashFn)(
       newSchemaWithBaseIdx,
-      filteredGridByColumn,
-      filteredGridByKey.map((g) => {
+      gridFilteredByCol,
+      groupedGrid.map((g) => {
         return g.idxs
       }),
     )

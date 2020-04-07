@@ -31,9 +31,7 @@ const makeToJSONWithSchema = (hashFn) => (
 ) => {
   // convert to json obj, header = idx 0
   const toJson = []
-  const header = schema
-    //.filter((item) => item.__metadata.isUniqueIdfier)
-    .map((item) => item.key)
+  const header = schema.map((item) => item.key)
 
   grid.forEach((row, rowIdx) => {
     const lineObj: any = {}

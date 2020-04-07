@@ -283,6 +283,37 @@ describe('Models', () => {
     })
   })
 
+  it('should be able to groupByKeys', () => {
+    const hashFnMock = jest.fn((obj) => {
+      if (obj === JSON.stringify({ Name: 'Slardar' })) {
+        return 'slz8'
+      }
+      return 2
+    })
+    const createModel = makeCreateModel(hashFnMock)
+
+    const testSchema = createSchema({
+      range: 'Z:AB',
+      header: ['Name', 'Class', 'HP'],
+      keys: ['Name'],
+    })
+
+    const heroes = [
+      ['Slardar', 'Roam', '888'],
+      ['Slardar', 'Roam', '888'],
+      ['Slark', 'Agi', '1'],
+      ['King', 'Fairy', '99999'],
+    ]
+    const heroModel = createModel(testSchema, heroes)
+
+    const slardar = heroModel.groupByKeys({ keysOnly: true }).getById('slz8')
+
+    expect(slardar).toEqual({
+      Name: 'Slardar',
+      __metadata: { rowIdx: [1, 2], uid: 'slz8' },
+    })
+  })
+
   it('should be able to use a custom filter ', () => {
     const testSchema = heroSchema
     const heroModel = createModel(testSchema)
