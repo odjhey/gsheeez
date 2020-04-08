@@ -524,6 +524,7 @@ describe('error handling', () => {
   const hashFnMock = jest.fn((obj) => '1')
   const createModel = makeCreateModel(hashFnMock)
   const createModelsFromBaseModel = makeCreateModelsFromBaseModel(() => 2)
+
   it('should detect schema mismatch errors ', () => {
     const grid = [
       //     ['head', 'item', 'subitem'],
@@ -548,5 +549,42 @@ describe('error handling', () => {
 
     const fn = () => createModelsFromBaseModel(schemas, model)
     expect(fn).toThrow('head2 not found in base schema.')
+  })
+
+  it('should be able to fill empty grid fields with undefined ', () => {
+    const grid = [
+      //     ['head', 'item', 'subitem'],
+      ['h1', 'i1'],
+      ['h1', 'i1'],
+      ['h1', 'i2'],
+    ]
+
+    const schema = createSchema({
+      range: 'B:D',
+      header: ['head', 'item', 'subitem'],
+    })
+
+    const model = createModel(schema, grid)
+
+    expect(model.getAll()).toEqual([
+      {
+        head: 'h1',
+        item: 'i1',
+        subitem: undefined,
+        __metadata: { rowIdx: [1], uid: '1' },
+      },
+      {
+        head: 'h1',
+        item: 'i1',
+        subitem: undefined,
+        __metadata: { rowIdx: [2], uid: '1' },
+      },
+      {
+        head: 'h1',
+        item: 'i2',
+        subitem: undefined,
+        __metadata: { rowIdx: [3], uid: '1' },
+      },
+    ])
   })
 })
