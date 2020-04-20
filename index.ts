@@ -51,43 +51,47 @@ purchOrderSheet
     console.error(err)
   })
 
-//purchOrderSheet
-//  .grid({ headerLength: 1 })
-//  .then((data) => {
-//    const schema = createSchema({
-//      range: purchOrderSheet.info.range,
-//      header: [
-//        'shipment',
-//        'delivery',
-//        'customer',
-//        'cust_name',
-//        'address',
-//        'qty',
-//        'itemno',
-//        'sku',
-//        'sku_name',
-//      ],
-//    })
-//
-//    const model = createModel(schema, data)
-//
-//    const d1 = model.get({
-//      shipment: '5000000002',
-//      delivery: '3000000001',
-//    })
-//
-//    model.update(d1, {
-//      qty: '30',
-//      sku_name: 'for realz Syrup lang',
-//    })
-//
-//    purchOrderSheet
-//      .save({ headerLength: 1 }, model.getChanges())
-//      .then((data) => {
-//        console.log('afterSave', data.status)
-//      })
-//      .catch((err) => console.log('err', err))
-//  })
-//  .catch((err) => {
-//    console.error(err)
-//  })
+purchOrderSheet
+  .grid({ headerLength: 1 })
+  .then((data) => {
+    const schema = createSchema({
+      range: purchOrderSheet.info.range,
+      header: [
+        'shipment',
+        'delivery',
+        'customer',
+        'cust_name',
+        'address',
+        'qty',
+        'itemno',
+        'sku',
+        'sku_name',
+      ],
+    })
+
+    const model = createModel(schema, data)
+
+    const d1 = model.get({
+      shipment: '5000000444',
+      delivery: '3000000001',
+    })
+
+    console.log('d1', d1)
+
+    model.update(d1, {
+      qty: '891',
+      sku_name: 'sheet3',
+    })
+
+    console.log(model.getChanges())
+
+    purchOrderSheet
+      .save({ headerLength: 1 }, model.getChanges())
+      .then((data) => {
+        console.log('afterSave', data.status)
+      })
+      .catch((err) => console.log('err', err))
+  })
+  .catch((err) => {
+    console.error(err)
+  })

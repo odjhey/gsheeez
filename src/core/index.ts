@@ -161,12 +161,20 @@ const sheep: TSheep = (() => {
               const requests = changes.map((change) => {
                 const { __metadata } = change
                 const req = {
-                  range:
-                    __metadata.column +
-                    (__metadata.rowIdx[0] + options.headerLength),
+                  range: info.sheet
+                    ? [
+                        info.sheet,
+                        __metadata.column +
+                          (__metadata.rowIdx[0] + options.headerLength),
+                      ].join('!')
+                    : __metadata.column +
+                      (__metadata.rowIdx[0] + options.headerLength),
+
                   majorDimension: 'COLUMNS',
                   values: [[change.value.to]],
                 }
+
+                console.log('req', req)
                 return req
               })
 
