@@ -15,6 +15,7 @@ sheep.configure({
 const purchOrderSheet = sheep.create({
   spreadsheetId: '1ux7ttNVuTbMaIfcW4t8tZe9Ii17F-3khXjHR8Il2dGI',
   range: 'A:I',
+  sheet: 'Sheet3'
 })
 
 purchOrderSheet
@@ -50,43 +51,43 @@ purchOrderSheet
     console.error(err)
   })
 
-purchOrderSheet
-  .grid({ headerLength: 1 })
-  .then((data) => {
-    const schema = createSchema({
-      range: purchOrderSheet.info.range,
-      header: [
-        'shipment',
-        'delivery',
-        'customer',
-        'cust_name',
-        'address',
-        'qty',
-        'itemno',
-        'sku',
-        'sku_name',
-      ],
-    })
-
-    const model = createModel(schema, data)
-
-    const d1 = model.get({
-      shipment: '5000000002',
-      delivery: '3000000001',
-    })
-
-    model.update(d1, {
-      qty: '30',
-      sku_name: 'for realz Syrup lang',
-    })
-
-    purchOrderSheet
-      .save({ headerLength: 1 }, model.getChanges())
-      .then((data) => {
-        console.log('afterSave', data.status)
-      })
-      .catch((err) => console.log('err', err))
-  })
-  .catch((err) => {
-    console.error(err)
-  })
+//purchOrderSheet
+//  .grid({ headerLength: 1 })
+//  .then((data) => {
+//    const schema = createSchema({
+//      range: purchOrderSheet.info.range,
+//      header: [
+//        'shipment',
+//        'delivery',
+//        'customer',
+//        'cust_name',
+//        'address',
+//        'qty',
+//        'itemno',
+//        'sku',
+//        'sku_name',
+//      ],
+//    })
+//
+//    const model = createModel(schema, data)
+//
+//    const d1 = model.get({
+//      shipment: '5000000002',
+//      delivery: '3000000001',
+//    })
+//
+//    model.update(d1, {
+//      qty: '30',
+//      sku_name: 'for realz Syrup lang',
+//    })
+//
+//    purchOrderSheet
+//      .save({ headerLength: 1 }, model.getChanges())
+//      .then((data) => {
+//        console.log('afterSave', data.status)
+//      })
+//      .catch((err) => console.log('err', err))
+//  })
+//  .catch((err) => {
+//    console.error(err)
+//  })

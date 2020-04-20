@@ -15,10 +15,16 @@ type TConfiguration = {
   hashFn: (obj) => any
 }
 
+type TSheepInfo = {
+  spreadsheetId: string
+  range: string
+  sheet?: string
+}
+
 type TSheep = {
   configure: (conf: TConfiguration) => void
   getConfig: () => TConfiguration
-  create: (info) => any // TSheepling
+  create: (info: TSheepInfo) => any // TSheepling
 }
 
 // type TSheepling = {
@@ -116,7 +122,9 @@ const sheep: TSheep = (() => {
               sheets.spreadsheets.values.get(
                 {
                   spreadsheetId: info.spreadsheetId,
-                  range: info.range,
+                  range: info.sheet
+                    ? [info.sheet, info.range].join('!')
+                    : info.range,
                 },
                 (gerr, data) => {
                   if (gerr) return reject(gerr)
