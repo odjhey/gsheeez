@@ -1,5 +1,5 @@
 import { google } from 'googleapis'
-import { sheep, createSchema, createModel } from './src/core'
+import { sheep, createSchema, createModel } from 'gsheeez'
 import { MD5 } from 'crypto-js'
 
 sheep.configure({
