@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7-beta.4](https://github.com/odjhey/gsheeez/compare/v0.0.7-beta.3...v0.0.7-beta.4) (2020-04-20)
+
+
+### Features
+
+* **models:** add options.keysOnly for groupByKeys ([b0be725](https://github.com/odjhey/gsheeez/commit/b0be725dc4254d9538206455ac636f669cf71eb4))
+* **sheets:** add multi-sheet option ([575489d](https://github.com/odjhey/gsheeez/commit/575489d7ef2ae8efe5f681d9ee38ef7e4dd957ef))
+* **sheets:** add multi-sheet option (write) ([1a17cb6](https://github.com/odjhey/gsheeez/commit/1a17cb60d84b9942bb2b4ff6b617fb3da65c7cff))
+
 ### [0.0.7-beta.3](https://github.com/odjhey/gsheeez/compare/v0.0.7-beta.2...v0.0.7-beta.3) (2020-04-07)
 
 
