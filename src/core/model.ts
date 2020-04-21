@@ -113,11 +113,29 @@ const makeCreateModel = (hashFn) => (
   rowIdxs?: Array<Array<number>>,
 ): TModel<any> => {
   let changes = []
-  let grid: TGrid = _grid
+  let grid: TGrid
 
   const makeToJSON = (phashFn, groupingIdxs) => (pschema, pgrid) => {
     return makeToJSONWithSchema(phashFn)(pschema, pgrid, groupingIdxs)
   }
+
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  const setGrid = (newGrid, oldGrid) => {
+    //    if (newGrid) {
+    //      if (newGrid.length > schema.length) {
+    //        console.warn(
+    //          'Grid is longer than defined schema. Some grid data will not be captured.',
+    //        )
+    //      } else if (newGrid.length < schema.length) {
+    //        console.warn(
+    //          'Schema is longer than grid. Some fields will be undefined.',
+    //        )
+    //      }
+    //    }
+    return newGrid
+  }
+
+  grid = setGrid(_grid, grid)
 
   const model = {
     getAll: () => makeToJSON(hashFn, rowIdxs)(schema, grid),
@@ -148,7 +166,7 @@ const makeCreateModel = (hashFn) => (
     filter: (filterFn) =>
       createFilter(schema, grid, makeToJSON(hashFn, rowIdxs))(filterFn),
     setGrid: (newGrid) => {
-      grid = newGrid
+      grid = setGrid(newGrid, grid)
     },
     getGrid: () => grid,
     setGridRefresh: async (refresh) => {
