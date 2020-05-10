@@ -434,6 +434,44 @@ describe('Models', () => {
     //    ])
   })
 
+  it('should get updated/unsaved values - createmodelsfrombase', () => {
+    const grid = [
+      //     ['head', 'item', 'itemValue'],
+      ['h1', 'i1', 'a'],
+      ['h1', 'i2', 'c'],
+      ['h2', 'i1', 'd'],
+    ]
+
+    const schema = createSchema({
+      range: 'B:D',
+      header: ['head', 'item', 'itemValue'],
+    })
+
+    const model = createModel(schema, grid)
+
+    const schemas = [
+      createSchema({ range: 'B:B', header: ['head'] }),
+      createSchema({
+        range: 'B:D',
+        header: ['head', 'item', 'itemValue'],
+        keys: ['head', 'item'],
+      }),
+    ]
+    const models = createModelsFromBaseModel(schemas, model)
+    const [hModel, iModel] = models
+
+    const h1i2 = iModel.get({ head: 'h1', item: 'i2' })
+    iModel.update(h1i2, { itemValue: 'xxx' })
+
+    expect(models.length).toBe(schemas.length)
+    expect(hModel.getAll()).toMatchObject([{ head: 'h1' }, { head: 'h2' }])
+    expect(iModel.getAll()).toMatchObject([
+      { head: 'h1', item: 'i1', itemValue: 'a' },
+      { head: 'h1', item: 'i2', itemValue: 'xxx' },
+      { head: 'h2', item: 'i1', itemValue: 'd' },
+    ])
+  })
+
   it('should be able to suport update of multiple rowIdx', () => {
     const grid = [
       //     ['head', hh, 'item', 'subitem'],

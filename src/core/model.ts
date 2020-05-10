@@ -4,7 +4,7 @@ import { makeToJSONWithSchema } from './utils'
 type TGrid = Array<Array<any>>
 
 type TModel<T> = {
-  getAll: () => Array<T>
+  getAll: (options?: { applyUnsavedUpdates: boolean }) => Array<T>
   get: (filter, options?: { applyUnsavedUpdates: boolean }) => T
   getById: (id) => T
   filter: (filter) => Array<T>
@@ -13,7 +13,7 @@ type TModel<T> = {
   clearChanges: () => void
 
   setGrid: (grid: TGrid) => void
-  getGrid: () => TGrid
+  getGrid: (options?: { applyUnsavedUpdates: boolean }) => TGrid
   setGridRefresh: (refresh: () => Promise<TGrid>) => Promise<any>
 
   //recursive-ish
@@ -124,7 +124,7 @@ const makeCreateModel = (hashFn) => (
           newValue: change.value.to,
         }))
       })
-      const newGrid = Array.from(grid)
+      const newGrid = Array.from(grid || [])
       patch.forEach((p) => {
         newGrid[p.rowIdx][p.colIdx] = p.newValue
       })
@@ -156,7 +156,8 @@ const makeCreateModel = (hashFn) => (
   grid = setGrid(_grid, grid)
 
   const model = {
-    getAll: () => makeToJSON(hashFn, rowIdxs)(schema, grid),
+    getAll: (options = { applyUnsavedUpdates: true }) =>
+      makeToJSON(hashFn, rowIdxs)(schema, lGetGrid(options)),
     get: (filter, options = { applyUnsavedUpdates: true }) =>
       createGetOne(
         schema,
@@ -190,7 +191,7 @@ const makeCreateModel = (hashFn) => (
     setGrid: (newGrid) => {
       grid = setGrid(newGrid, grid)
     },
-    getGrid: () => grid,
+    getGrid: (options = { applyUnsavedUpdates: true }) => lGetGrid(options),
     setGridRefresh: async (refresh) => {
       grid = await refresh()
     },
