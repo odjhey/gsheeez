@@ -28,8 +28,12 @@ declare const createModel: (schema: TSchema, _grid?: any[][], rowIdxs?: number[]
     get: (filter: any, options?: {
         applyUnsavedUpdates: boolean;
     }) => any;
-    getById: (id: any) => any;
-    filter: (filter: any) => any[];
+    getById: (id: any, options?: {
+        applyUnsavedUpdates: boolean;
+    }) => any;
+    filter: (filter: any, options?: {
+        applyUnsavedUpdates: boolean;
+    }) => any[];
     update: (obj: any, fields: any) => any;
     getChanges: () => {
         fieldname: string;
@@ -44,9 +48,7 @@ declare const createModel: (schema: TSchema, _grid?: any[][], rowIdxs?: number[]
     }[];
     clearChanges: () => void;
     setGrid: (grid: any[][]) => void;
-    getGrid: (options?: {
-        applyUnsavedUpdates: boolean;
-    }) => any[][];
+    getGrid: () => any[][];
     setGridRefresh: (refresh: () => Promise<any[][]>) => Promise<any>;
     groupByKeys: (options?: {
         keysOnly: boolean;
@@ -62,8 +64,12 @@ declare const createModelsFromBaseModel: (schemas: TSchema[], baseModel: {
     get: (filter: any, options?: {
         applyUnsavedUpdates: boolean;
     }) => any;
-    getById: (id: any) => any;
-    filter: (filter: any) => any[];
+    getById: (id: any, options?: {
+        applyUnsavedUpdates: boolean;
+    }) => any;
+    filter: (filter: any, options?: {
+        applyUnsavedUpdates: boolean;
+    }) => any[];
     update: (obj: any, fields: any) => any;
     getChanges: () => {
         fieldname: string;
@@ -78,9 +84,7 @@ declare const createModelsFromBaseModel: (schemas: TSchema[], baseModel: {
     }[];
     clearChanges: () => void;
     setGrid: (grid: any[][]) => void;
-    getGrid: (options?: {
-        applyUnsavedUpdates: boolean;
-    }) => any[][];
+    getGrid: () => any[][];
     setGridRefresh: (refresh: () => Promise<any[][]>) => Promise<any>;
     groupByKeys: (options?: {
         keysOnly: boolean;
@@ -97,8 +101,12 @@ declare const createModelsFromBaseModel: (schemas: TSchema[], baseModel: {
     get: (filter: any, options?: {
         applyUnsavedUpdates: boolean;
     }) => any;
-    getById: (id: any) => any;
-    filter: (filter: any) => any[];
+    getById: (id: any, options?: {
+        applyUnsavedUpdates: boolean;
+    }) => any;
+    filter: (filter: any, options?: {
+        applyUnsavedUpdates: boolean;
+    }) => any[];
     update: (obj: any, fields: any) => any;
     getChanges: () => {
         fieldname: string;
@@ -113,9 +121,7 @@ declare const createModelsFromBaseModel: (schemas: TSchema[], baseModel: {
     }[];
     clearChanges: () => void;
     setGrid: (grid: any[][]) => void;
-    getGrid: (options?: {
-        applyUnsavedUpdates: boolean;
-    }) => any[][];
+    getGrid: () => any[][];
     setGridRefresh: (refresh: () => Promise<any[][]>) => Promise<any>;
     groupByKeys: (options?: {
         keysOnly: boolean;

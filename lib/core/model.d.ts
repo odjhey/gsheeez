@@ -7,15 +7,17 @@ declare type TModel<T> = {
     get: (filter: any, options?: {
         applyUnsavedUpdates: boolean;
     }) => T;
-    getById: (id: any) => T;
-    filter: (filter: any) => Array<T>;
+    getById: (id: any, options?: {
+        applyUnsavedUpdates: boolean;
+    }) => T;
+    filter: (filter: any, options?: {
+        applyUnsavedUpdates: boolean;
+    }) => Array<T>;
     update: (obj: T, fields: any) => T;
     getChanges: () => TChangeRecords;
     clearChanges: () => void;
     setGrid: (grid: TGrid) => void;
-    getGrid: (options?: {
-        applyUnsavedUpdates: boolean;
-    }) => TGrid;
+    getGrid: () => TGrid;
     setGridRefresh: (refresh: () => Promise<TGrid>) => Promise<any>;
     groupByKeys: (options?: {
         keysOnly: boolean;
