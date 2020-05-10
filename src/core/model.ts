@@ -124,7 +124,7 @@ const makeCreateModel = (hashFn) => (
           newValue: change.value.to,
         }))
       })
-      let newGrid = Array.from(grid)
+      const newGrid = Array.from(grid)
       patch.forEach((p) => {
         newGrid[p.rowIdx][p.colIdx] = p.newValue
       })
@@ -158,7 +158,11 @@ const makeCreateModel = (hashFn) => (
   const model = {
     getAll: () => makeToJSON(hashFn, rowIdxs)(schema, grid),
     get: (filter, options = { applyUnsavedUpdates: true }) =>
-      createGetOne(schema, lGetGrid(options), makeToJSON(hashFn, rowIdxs))(filter),
+      createGetOne(
+        schema,
+        lGetGrid(options),
+        makeToJSON(hashFn, rowIdxs),
+      )(filter),
     getById: (id) =>
       createGetById(schema, grid, makeToJSON(hashFn, rowIdxs))(id),
     update: (obj, fields) => {

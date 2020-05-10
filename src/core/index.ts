@@ -174,7 +174,6 @@ const sheep: TSheep = (() => {
                   values: [[change.value.to]],
                 }
 
-                console.log('req', req)
                 return req
               })
 
