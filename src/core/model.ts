@@ -5,7 +5,7 @@ type TGrid = Array<Array<any>>
 
 type TModel<T> = {
   getAll: () => Array<T>
-  get: (filter) => T
+  get: (filter, options?: { applyUnsavedUpdates: boolean }) => T
   getById: (id) => T
   filter: (filter) => Array<T>
   update: (obj: T, fields) => T
@@ -115,6 +115,24 @@ const makeCreateModel = (hashFn) => (
   let changes = []
   let grid: TGrid
 
+  const lGetGrid = (options): TGrid => {
+    if (options.applyUnsavedUpdates) {
+      const patch = changes.flatMap((change) => {
+        return change.__metadata.rowIdx.map((ridx) => ({
+          rowIdx: ridx - 1,
+          colIdx: getFieldFromSchema(change.fieldname, schema).__metadata.idx,
+          newValue: change.value.to,
+        }))
+      })
+      let newGrid = Array.from(grid)
+      patch.forEach((p) => {
+        newGrid[p.rowIdx][p.colIdx] = p.newValue
+      })
+      return newGrid
+    }
+    return grid
+  }
+
   const makeToJSON = (phashFn, groupingIdxs) => (pschema, pgrid) => {
     return makeToJSONWithSchema(phashFn)(pschema, pgrid, groupingIdxs)
   }
@@ -139,8 +157,8 @@ const makeCreateModel = (hashFn) => (
 
   const model = {
     getAll: () => makeToJSON(hashFn, rowIdxs)(schema, grid),
-    get: (filter) =>
-      createGetOne(schema, grid, makeToJSON(hashFn, rowIdxs))(filter),
+    get: (filter, options = { applyUnsavedUpdates: true }) =>
+      createGetOne(schema, lGetGrid(options), makeToJSON(hashFn, rowIdxs))(filter),
     getById: (id) =>
       createGetById(schema, grid, makeToJSON(hashFn, rowIdxs))(id),
     update: (obj, fields) => {

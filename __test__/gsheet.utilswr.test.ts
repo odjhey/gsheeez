@@ -44,6 +44,7 @@ describe('utils - write ', () => {
     const heroSchema = createSchema({
       range: 'B:D',
       header: ['Name', 'Class', 'HP'],
+      keys: ['Name', 'Class'],
     })
 
     const testSchema = heroSchema
@@ -52,6 +53,8 @@ describe('utils - write ', () => {
 
     const fairy = heroModel.get({ Class: 'Fairy' })
     const newFairy = heroModel.update(fairy, { HP: '20' })
+
+    const newFairyWithGet = heroModel.get({ Class: 'Fairy' })
 
     //make sure to test that fairy is not modified
     expect(fairy).toMatchObject({
@@ -65,6 +68,8 @@ describe('utils - write ', () => {
       Class: 'Fairy',
       HP: '20',
     })
+
+    expect(newFairy).toEqual(newFairyWithGet)
   })
 
   it('should be able to list modifications', () => {
