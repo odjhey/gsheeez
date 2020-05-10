@@ -6,14 +6,14 @@ type TGrid = Array<Array<any>>
 type TModel<T> = {
   getAll: (options?: { applyUnsavedUpdates: boolean }) => Array<T>
   get: (filter, options?: { applyUnsavedUpdates: boolean }) => T
-  getById: (id) => T
-  filter: (filter) => Array<T>
+  getById: (id, options?: { applyUnsavedUpdates: boolean }) => T
+  filter: (filter, options?: { applyUnsavedUpdates: boolean }) => Array<T>
   update: (obj: T, fields) => T
   getChanges: () => TChangeRecords
   clearChanges: () => void
 
   setGrid: (grid: TGrid) => void
-  getGrid: (options?: { applyUnsavedUpdates: boolean }) => TGrid
+  getGrid: () => TGrid
   setGridRefresh: (refresh: () => Promise<TGrid>) => Promise<any>
 
   //recursive-ish
@@ -115,26 +115,44 @@ const makeCreateModel = (hashFn) => (
   let changes = []
   let grid: TGrid
 
-  const lGetGrid = (options): TGrid => {
-    if (options.applyUnsavedUpdates) {
-      const patch = changes.flatMap((change) => {
-        return change.__metadata.rowIdx.map((ridx) => ({
-          rowIdx: ridx - 1,
-          colIdx: getFieldFromSchema(change.fieldname, schema).__metadata.idx,
-          newValue: change.value.to,
-        }))
-      })
-      const newGrid = Array.from(grid || [])
-      patch.forEach((p) => {
-        newGrid[p.rowIdx][p.colIdx] = p.newValue
-      })
-      return newGrid
-    }
-    return grid
-  }
+  //  const lGetGrid = (options): TGrid => {
+  //    if (options.applyUnsavedUpdates) {
+  //      const patch = changes.flatMap((change) => {
+  //        return change.__metadata.rowIdx.map((ridx) => ({
+  //          rowIdx: ridx - 1,
+  //          colIdx: getFieldFromSchema(change.fieldname, schema).__metadata.idx,
+  //          newValue: change.value.to,
+  //        }))
+  //      })
+  //      const newGrid = Array.from(grid || [])
+  //      patch.forEach((p) => {
+  //        newGrid[p.rowIdx][p.colIdx] = p.newValue
+  //      })
+  //      return newGrid
+  //    }
+  //    return grid
+  //  }
 
-  const makeToJSON = (phashFn, groupingIdxs) => (pschema, pgrid) => {
-    return makeToJSONWithSchema(phashFn)(pschema, pgrid, groupingIdxs)
+  const makeToJSON = (
+    phashFn,
+    groupingIdxs,
+    options: { applyUnsavedUpdates: boolean },
+  ) => (pschema, pgrid) => {
+    const jsonObj = makeToJSONWithSchema(phashFn)(pschema, pgrid, groupingIdxs)
+    if (options.applyUnsavedUpdates) {
+      const withPatch = jsonObj.map((row) => {
+        const newRow = row
+        changes.forEach((p) => {
+          if (row.__metadata.rowIdx.includes(p.__metadata.rowIdx[0])) {
+            newRow[p.fieldname] = p.value.to
+          }
+        })
+
+        return newRow
+      })
+      return withPatch
+    }
+    return jsonObj
   }
 
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
@@ -157,15 +175,11 @@ const makeCreateModel = (hashFn) => (
 
   const model = {
     getAll: (options = { applyUnsavedUpdates: true }) =>
-      makeToJSON(hashFn, rowIdxs)(schema, lGetGrid(options)),
+      makeToJSON(hashFn, rowIdxs, options)(schema, grid),
     get: (filter, options = { applyUnsavedUpdates: true }) =>
-      createGetOne(
-        schema,
-        lGetGrid(options),
-        makeToJSON(hashFn, rowIdxs),
-      )(filter),
-    getById: (id) =>
-      createGetById(schema, grid, makeToJSON(hashFn, rowIdxs))(id),
+      createGetOne(schema, grid, makeToJSON(hashFn, rowIdxs, options))(filter),
+    getById: (id, options = { applyUnsavedUpdates: true }) =>
+      createGetById(schema, grid, makeToJSON(hashFn, rowIdxs, options))(id),
     update: (obj, fields) => {
       const newObj = { ...obj }
 
@@ -186,12 +200,16 @@ const makeCreateModel = (hashFn) => (
       return newObj
     },
 
-    filter: (filterFn) =>
-      createFilter(schema, grid, makeToJSON(hashFn, rowIdxs))(filterFn),
+    filter: (filterFn, options = { applyUnsavedUpdates: true }) =>
+      createFilter(
+        schema,
+        grid,
+        makeToJSON(hashFn, rowIdxs, options),
+      )(filterFn),
     setGrid: (newGrid) => {
       grid = setGrid(newGrid, grid)
     },
-    getGrid: (options = { applyUnsavedUpdates: true }) => lGetGrid(options),
+    getGrid: () => grid,
     setGridRefresh: async (refresh) => {
       grid = await refresh()
     },

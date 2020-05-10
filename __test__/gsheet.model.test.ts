@@ -5,6 +5,8 @@ import {
   makeCreateModelsFromBaseModel,
 } from '../src/core/model'
 
+import { mergeSchema } from '../src/core'
+
 const heroGrid = [
   ['Slardar', 'Roam', '888'],
   ['Slark', 'Agi', '1'],
@@ -523,6 +525,55 @@ describe('Models', () => {
         __metadata: { rowIdx: [4], column: 'C' },
       },
     ])
+  })
+
+  it('should be able to suport update of multiple rowIdx - createModelsFromBase', () => {
+    const grid = [
+      //     ['head', hh, 'item', 'itemValue'],
+      ['h1', 'hh', 'i1', 'v1'],
+      ['h1', 'hh', 'i1', 'v1'],
+      ['h1', 'hh', 'i1', 'v1'],
+      ['h1', 'hh', 'i2', 'v2'],
+      ['h3', 'hh', 'i3', 'v3'],
+      ['h3', 'hh', 'i3', 'v3'],
+      ['h3', 'hh', 'i3', 'v3'],
+      ['h3', 'hh', 'i3', 'v3'],
+    ]
+
+    const baseSchema = createSchema({
+      range: 'B:E',
+      header: ['head', 'hh', 'item', 'itemValue'],
+    })
+
+    const baseModel = createModel(baseSchema, grid)
+
+    const schemas = [
+      createSchema({ range: 'B:B', header: ['head'], keys: ['head'] }),
+      createSchema({
+        range: 'D:E',
+        header: ['item', 'itemValue'],
+        keys: ['item'],
+      }),
+    ]
+
+    const itemSchema = mergeSchema(schemas)
+
+    const models = createModelsFromBaseModel([itemSchema], baseModel)
+    const [iModel] = models
+
+    const h3i3 = iModel.get({ head: 'h3' })
+    iModel.update(h3i3, { itemValue: 'www' })
+    const updated = iModel.get({ head: 'h3' })
+
+    expect(updated).toEqual({
+      head: 'h3',
+      item: 'i3',
+      itemValue: 'www',
+      __metadata: {
+        rowIdx: [5, 6, 7, 8],
+        uid: 2
+      },
+    })
   })
 })
 
