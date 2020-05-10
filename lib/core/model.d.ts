@@ -1,15 +1,21 @@
 import { TSchema } from '.';
 declare type TGrid = Array<Array<any>>;
 declare type TModel<T> = {
-    getAll: () => Array<T>;
-    get: (filter: any) => T;
+    getAll: (options?: {
+        applyUnsavedUpdates: boolean;
+    }) => Array<T>;
+    get: (filter: any, options?: {
+        applyUnsavedUpdates: boolean;
+    }) => T;
     getById: (id: any) => T;
     filter: (filter: any) => Array<T>;
     update: (obj: T, fields: any) => T;
     getChanges: () => TChangeRecords;
     clearChanges: () => void;
     setGrid: (grid: TGrid) => void;
-    getGrid: () => TGrid;
+    getGrid: (options?: {
+        applyUnsavedUpdates: boolean;
+    }) => TGrid;
     setGridRefresh: (refresh: () => Promise<TGrid>) => Promise<any>;
     groupByKeys: (options?: {
         keysOnly: boolean;
