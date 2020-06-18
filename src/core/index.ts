@@ -9,8 +9,10 @@ const readline = require('readline')
 
 type TConfiguration = {
   scopes: Array<string>
-  tokenPath: string
-  credsPath: string
+  tokenPath?: string
+  credsPath?: string
+  token?: string
+  creds?: string
   google: any
   hashFn: (obj) => any
 }
@@ -40,6 +42,8 @@ const sheep: TSheep = (() => {
     scopes: [],
     tokenPath: '',
     credsPath: '',
+    token: '',
+    creds: '',
     google: {},
     hashFn: (obj) => hashFn(obj),
   }
@@ -54,7 +58,7 @@ const sheep: TSheep = (() => {
   const create = (_info) => {
     const info = _info
     // const { scopes, tokenPath, credsPath, google } = conf
-    const { tokenPath, credsPath, google } = conf
+    const { tokenPath, credsPath, google, token, creds } = conf
 
     /**
      * Get and store new token after prompting for user authorization, and then
@@ -91,7 +95,7 @@ const sheep: TSheep = (() => {
      * @param {Object} credentials The authorization client credentials.
      * @param {function} callback The callback to call with the authorized client.
      */
-    function authorize(credentials, callback, reject) {
+    function authorizeWithFile(credentials, callback, reject) {
       const { client_secret, client_id, redirect_uris } = credentials.installed
       /* eslint camelcase: 'off' */
       const oAuth2Client = new google.auth.OAuth2(
@@ -109,92 +113,136 @@ const sheep: TSheep = (() => {
       })
     }
 
-    const grid = (options = { headerLength: 0 }): Promise<any> =>
-      new Promise((resolve, reject) => {
-        // Load client secrets from a local file.
-        fs.readFile(credsPath, (err, content) => {
-          if (err) return reject(err)
-          // Authorize a client with credentials, then call the Google Sheets API.
-          authorize(
-            JSON.parse(content),
-            (auth) => {
-              const sheets = google.sheets({ version: 'v4', auth })
-              sheets.spreadsheets.values.get(
-                {
-                  spreadsheetId: info.spreadsheetId,
-                  range: info.sheet
-                    ? [info.sheet, info.range].join('!')
-                    : info.range,
-                },
-                (gerr, data) => {
-                  if (gerr) return reject(gerr)
+    function authorizeWithObjs({ creds, token }, callback, reject) {
+      const { client_secret, client_id, redirect_uris } = creds.installed
+      /* eslint camelcase: 'off' */
+      const oAuth2Client = new google.auth.OAuth2(
+        client_id,
+        client_secret,
+        redirect_uris[0],
+      )
 
-                  if (options.headerLength > 0) {
-                    data.data.values.splice(0, options.headerLength)
-                    resolve(data.data.values)
-                  } else {
-                    resolve(data.data.values)
-                  }
-                },
-              )
-            },
-            reject,
-          )
-        })
+      oAuth2Client.setCredentials(token)
+      callback(oAuth2Client)
+    }
+
+    function authorize(credentials, callback, reject) {
+      if (tokenPath) {
+        return authorizeWithFile(credentials, callback, reject)
+      }
+      return authorizeWithObjs(
+        { creds: credentials, token: token },
+        callback,
+        reject,
+      )
+    }
+
+    const grid = (options = { headerLength: 0 }): Promise<any> => {
+      const createExecCb = (resolve, reject) => (auth) => {
+        const sheets = google.sheets({ version: 'v4', auth })
+        sheets.spreadsheets.values.get(
+          {
+            spreadsheetId: info.spreadsheetId,
+            range: info.sheet ? [info.sheet, info.range].join('!') : info.range,
+          },
+          (gerr, data) => {
+            if (gerr) return reject(gerr)
+
+            if (options.headerLength > 0) {
+              data.data.values.splice(0, options.headerLength)
+              resolve(data.data.values)
+            } else {
+              resolve(data.data.values)
+            }
+          },
+        )
+      }
+
+      return new Promise((resolve, reject) => {
+        if (credsPath) {
+          // Load client secrets from a local file.
+          fs.readFile(credsPath, (err, content) => {
+            if (err) return reject(err)
+            // Authorize a client with credentials, then call the Google Sheets API.
+            authorize(
+              JSON.parse(content),
+              createExecCb(resolve, reject),
+              reject,
+            )
+          })
+        } else {
+          if (!creds) {
+            reject(new Error('Gsheet Credentials not found.'))
+            return
+          }
+          authorize(creds, createExecCb(resolve, reject), reject)
+        }
       })
+    }
 
     const save = (
       options = {
         headerLength: 0,
       },
       changes,
-    ): Promise<any> =>
-      new Promise((resolve, reject) => {
-        // Load client secrets from a local file.
-        fs.readFile(credsPath, (err, content) => {
-          if (err) return reject(err)
-          // Authorize a client with credentials, then call the Google Sheets API.
-          authorize(
-            JSON.parse(content),
-            (auth) => {
-              const sheets = google.sheets({ version: 'v4', auth })
-              const requests = changes.map((change) => {
-                const { __metadata } = change
-                const req = {
-                  range: info.sheet
-                    ? [
-                        info.sheet,
-                        __metadata.column +
-                          (__metadata.rowIdx[0] + options.headerLength),
-                      ].join('!')
-                    : __metadata.column +
-                      (__metadata.rowIdx[0] + options.headerLength),
+    ): Promise<any> => {
+      const createExecCb = (resolve, reject) => (auth) => {
+        const sheets = google.sheets({ version: 'v4', auth })
+        const requests = changes.map((change) => {
+          const { __metadata } = change
+          const req = {
+            range: info.sheet
+              ? [
+                  info.sheet,
+                  __metadata.column +
+                    (__metadata.rowIdx[0] + options.headerLength),
+                ].join('!')
+              : __metadata.column +
+                (__metadata.rowIdx[0] + options.headerLength),
 
-                  majorDimension: 'COLUMNS',
-                  values: [[change.value.to]],
-                }
+            majorDimension: 'COLUMNS',
+            values: [[change.value.to]],
+          }
 
-                return req
-              })
-
-              sheets.spreadsheets.values.batchUpdate(
-                {
-                  spreadsheetId: info.spreadsheetId,
-                  requestBody: {
-                    valueInputOption: 'USER_ENTERED',
-                    data: requests,
-                  },
-                },
-                (bUErr, res) => {
-                  if (bUErr) return reject(bUErr)
-                  resolve(res)
-                },
-              )
-            },
-            reject,
-          )
+          return req
         })
+
+        sheets.spreadsheets.values.batchUpdate(
+          {
+            spreadsheetId: info.spreadsheetId,
+            requestBody: {
+              valueInputOption: 'USER_ENTERED',
+              data: requests,
+            },
+          },
+          (bUErr, res) => {
+            if (bUErr) return reject(bUErr)
+            resolve(res)
+          },
+        )
+      }
+
+      return new Promise((resolve, reject) => {
+        if (credsPath) {
+          // Load client secrets from a local file.
+          fs.readFile(credsPath, (err, content) => {
+            if (err) return reject(err)
+            // Authorize a client with credentials, then call the Google Sheets API.
+            authorize(
+              JSON.parse(content),
+              createExecCb(resolve, reject),
+              reject,
+            )
+          })
+        } else {
+          if (!creds) {
+            reject(new Error('Gsheet Credentials not found.'))
+            return
+          }
+          authorize(creds, createExecCb(resolve, reject), reject)
+        }
       })
+    }
 
     return { grid, info, save }
   }
