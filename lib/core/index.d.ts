@@ -2,8 +2,10 @@ import { createSchema, TSchema } from './schema';
 import { mergeSchema } from './utils';
 declare type TConfiguration = {
     scopes: Array<string>;
-    tokenPath: string;
-    credsPath: string;
+    tokenPath?: string;
+    credsPath?: string;
+    token?: string;
+    creds?: string;
     google: any;
     hashFn: (obj: any) => any;
 };
