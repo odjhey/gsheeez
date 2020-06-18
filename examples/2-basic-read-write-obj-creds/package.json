@@ -1,5 +1,5 @@
 {
-  "name": "1-basic-usage-read-write",
+  "name": "2-basic-read-write-obj-creds",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "crypto-js": "^4.0.0",
+    "dotenv": "^8.2.0",
     "googleapis": "^49.0.0",
     "gsheeez": "https://github.com/odjhey/gsheeez#0.0.7-beta.6"
   },
