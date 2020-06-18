@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7-beta.5](https://github.com/odjhey/gsheeez/compare/v0.0.7-beta.4...v0.0.7-beta.5) (2020-06-18)
+
+
+### Features
+
+* **creds:** add option to pass plain objs as creds ([76f2933](https://github.com/odjhey/gsheeez/commit/76f2933d594b23dc484ca4177d48e8c27233e74f))
+* **model:** add option in get to get unsavedChanges ([01f6cf4](https://github.com/odjhey/gsheeez/commit/01f6cf4837c21de1283e79c7d1317e8542664a4a))
+
+
+### Bug Fixes
+
+* **apply-patch:** change approach of applying patches ([69e8040](https://github.com/odjhey/gsheeez/commit/69e80404c3c0a1c91682c31fbd3b0cb56f833f44))
+* **getAll:** fix  getall bug not reflecting unsaved updates ([fd582d1](https://github.com/odjhey/gsheeez/commit/fd582d1e1e76036439e62f89301881f74021c8fd))
+
 ### [0.0.7-beta.4](https://github.com/odjhey/gsheeez/compare/v0.0.7-beta.3...v0.0.7-beta.4) (2020-04-20)
 
 
