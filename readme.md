@@ -1,3 +1,5 @@
+> :warning: The boi is old and complicated. DO NOT USE! :warning:
+
 # g-Sheeez
 
 > Read and Write to gsheets using google's api  
